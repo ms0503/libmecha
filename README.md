@@ -38,13 +38,13 @@ libmechaはSBDBTを用いたBT接続のコントローラー・メカトロ製�
 ## Using
 [Installing](#installing)を実行した後であればルートプロジェクトをビルドする際に一緒にビルドされます。
 単体でビルドする場合、
-- Linux/macOSの場合:
+- Linux/macOSの場合:  
   bash:
   ```
   $ cd libmecha
   $ ./build.sh
   ```
-- Windowsの場合:
+- Windowsの場合:  
   PowerShell:
   ```
   PS> Set-ExecutionPolicy -Scope Process Bypass
