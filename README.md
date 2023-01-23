@@ -6,10 +6,9 @@ libmechaはモータードライバー、SBDBT、CANを操作するためのラ�
 - STM32の開発環境
   - 各種IDE
     - STM32CubeIDE
-    - System Workbench for STM32 [Deprecated]
-    - CLion
-  - or
-  - CMake 3.1〜
+    - or System Workbench for STM32 [Deprecated]
+    - or CLion
+  - or CMake 3.1〜
     - g++ 7.1〜
 
 ## Installing
