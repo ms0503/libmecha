@@ -9,7 +9,7 @@ libmechaはモータードライバー、SBDBT、CANを操作するためのラ�
     - or System Workbench for STM32 [Deprecated]
     - or CLion
   - or CMake 3.1〜
-    - g++ 7.1〜
+    - g++(arm-none-eabi) 7.1〜
 
 ## Installing
 まず、STM32プロジェクトを作ります。
