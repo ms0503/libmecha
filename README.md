@@ -58,6 +58,7 @@ libmechaはモータードライバー、SBDBT、CANを操作するためのラ�
 
 ## License
 未定です。暫定的に[GNU Lesser General Public License, Version 3](https://www.gnu.org/licenses/lgpl-3.0.html)を適用します。
+
 ![GNU LGPL Logo](https://www.gnu.org/graphics/lgplv3-147x51.png)
 
 ## Author
