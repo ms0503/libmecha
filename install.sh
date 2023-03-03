@@ -9,12 +9,12 @@ if [[ ! -f ../CMakeLists.txt ]]; then
     printf "[1;31m       STM32プロジェクトルートの直下にlibmechaディレクトリ、その配下にこのファイルが存在するようにして下さい。[0m\n"
     exit 1
 fi
-if [[ -r ../CMakeLists.txt ]]; then
+if [[ ! -r ../CMakeLists.txt ]]; then
     printf "[1;31mError: ルートプロジェクトのCMakeLists.txtに読み取り権限がありません。[0m\n"
     printf "[1;31m       権限を付与するか適切なユーザーで実行して下さい。[0m\n"
     exit 2
 fi
-if [[ -w ../CMakeLists.txt ]]; then
+if [[ ! -w ../CMakeLists.txt ]]; then
     printf "[1;31mError: ルートプロジェクトのCMakeLists.txtに書き込み権限がありません。[0m\n"
     printf "[1;31m       権限を付与するか適切なユーザーで実行して下さい。[0m\n"
     exit 3
