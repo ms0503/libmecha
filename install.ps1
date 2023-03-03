@@ -1,24 +1,24 @@
 set-location "$PSScriptRoot"
-[string] $SCRIPT_VERSION = "1.0.0"
+[string] $SCRIPT_VERSION = "1.0.2"
 write-host "libmecha インストールスクリプト Ver.$SCRIPT_VERSION" -foregroundcolor cyan
 write-host "Created by M.s [22er]" -foregroundcolor cyan
 write-host
-if((test-path "..\CMakeLists.txt") -eq "False") {
+if(((test-path "..\CMakeLists.txt") -eq "False") -or ((test-path "..\CMakeLists_template.txt") -eq "False")) {
     write-host "Error: 親ディレクトリがSTM32プロジェクト(CMakeプロジェクト)ではありません。" -foregroundcolor red
     write-host "       STM32プロジェクトルートの直下にlibmechaディレクトリ、その配下にこのファイルが存在するようにして下さい。" -foregroundcolor red
     exit 1
 }
-if(((get-acl "..\CMakeLists.txt").Access | where-object {$_.IdentityReference -match "$User" -and $_.AccessControlType -match "Allow"} | foreach-object {$t = $False} {$t = (($_FileSystemRights -band [System.Security.AccessControl.FileSystemRights]::Read) -eq [System.Security.AccessControl.FileSystemRights]::Read) -or $t} {$t}) -eq "False") {
+if((((get-acl "..\CMakeLists.txt").Access | where-object {$_.IdentityReference -match "$User" -and $_.AccessControlType -match "Allow"} | foreach-object {$t = $False} {$t = (($_FileSystemRights -band [System.Security.AccessControl.FileSystemRights]::Read) -eq [System.Security.AccessControl.FileSystemRights]::Read) -or $t} {$t}) -eq "False") -or (((get-acl "..\CMakeLists_template.txt").Access | where-object {$_.IdentityReference -match "$User" -and $_.AccessControlType -match "Allow"} | foreach-object {$t = $False} {$t = (($_FileSystemRights -band [System.Security.AccessControl.FileSystemRights]::Read) -eq [System.Security.AccessControl.FileSystemRights]::Read) -or $t} {$t}) -eq "False")) {
     write-host "Error: ルートプロジェクトのCMakeLists.txtに読み取り権限がありません。" -foregroundcolor red
     write-host "       権限を付与するか適切なユーザーで実行して下さい。" -foregroundcolor red
     exit 2
 }
-if(((get-acl "..\CMakeLists.txt").Access | where-object {$_.IdentityReference -match "$User" -and $_.AccessControlType -match "Allow"} | foreach-object {$t = $False} {$t = (($_FileSystemRights -band [System.Security.AccessControl.FileSystemRights]::Write) -eq [System.Security.AccessControl.FileSystemRights]::Write) -or $t} {$t}) -eq "False") {
+if((((get-acl "..\CMakeLists.txt").Access | where-object {$_.IdentityReference -match "$User" -and $_.AccessControlType -match "Allow"} | foreach-object {$t = $False} {$t = (($_FileSystemRights -band [System.Security.AccessControl.FileSystemRights]::Write) -eq [System.Security.AccessControl.FileSystemRights]::Write) -or $t} {$t}) -eq "False") -or (((get-acl "..\CMakeLists_template.txt").Access | where-object {$_.IdentityReference -match "$User" -and $_.AccessControlType -match "Allow"} | foreach-object {$t = $False} {$t = (($_FileSystemRights -band [System.Security.AccessControl.FileSystemRights]::Write) -eq [System.Security.AccessControl.FileSystemRights]::Write) -or $t} {$t}) -eq "False")) {
     write-host "Error: ルートプロジェクトのCMakeLists.txtに書き込み権限がありません。" -foregroundcolor red
     write-host "       権限を付与するか適切なユーザーで実行して下さい。" -foregroundcolor red
     exit 3
 }
-if((get-content "..\CMakeLists.txt" | select-string -quiet "# Powered by libmecha from mechalab")) {
+if(((get-content "..\CMakeLists.txt" | select-string -quiet "# Powered by libmecha from mechalab")) -or ((get-content "..\CMakeLists_template.txt" | select-string -quiet "# Powered by libmecha from mechalab"))) {
     write-host "Info: 既に組み込まれています。" -foregroundcolor green
     exit 0
 }
@@ -35,5 +35,12 @@ include_directories(libmecha/include)
 add_subdirectory(libmecha)
 target_link_libraries(`${PROJECT_NAME}.elf mecha)
 "@ | out-file -append "..\CMakeLists.txt"
+write-output @"
+
+# Powered by libmecha from mechalab
+include_directories(libmecha/include)
+add_subdirectory(libmecha)
+target_link_libraries(`$`${PROJECT_NAME}.elf mecha)
+"@ | out-file -append "..\CMakeLists_template.txt"
 write-host "Info: 正常に終了しました。" -foreground green
 exit 0
