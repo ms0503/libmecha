@@ -9,7 +9,7 @@ libmechaはモータードライバー、SBDBT、CANを操作するためのラ�
     - or System Workbench for STM32 [Deprecated]
     - or CLion
   - or CMake 3.1〜
-    - g++ 7.1〜
+    - g++(arm-none-eabi) 7.1〜
 
 ## Installing
 まず、STM32プロジェクトを作ります。
@@ -58,6 +58,7 @@ libmechaはモータードライバー、SBDBT、CANを操作するためのラ�
 
 ## License
 未定です。暫定的に[GNU Lesser General Public License, Version 3](https://www.gnu.org/licenses/lgpl-3.0.html)を適用します。
+
 ![GNU LGPL Logo](https://www.gnu.org/graphics/lgplv3-147x51.png)
 
 ## Author
