@@ -65,7 +65,7 @@ public:
         return_AnalogState_.LY = 0;
         return_AnalogState_.RX = 0;
         return_AnalogState_.RY = 0;
-        for(uint8_t & i : processed_receive_data_) {
+        for(uint8_t &i : processed_receive_data_) {
             i = 0;
         }
     }

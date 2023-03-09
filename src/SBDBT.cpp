@@ -42,9 +42,7 @@ bool SBDBT::receiveCheck(const uint8_t (&receive_data)[8]) {
         for(uint8_t i = 1; i < 7; i++) {
             checksum_check += processed_receive_data[i];
         }
-        while(128 <= checksum_check) {
-            checksum_check -= 128;
-        }
+        checksum_check &= 0b01111111;
         if(static_cast<uint8_t>(checksum_check) == processed_receive_data[7]) {
             for(uint8_t i = 0; i < 7; i++) {
                 processed_receive_data_[i] = processed_receive_data[i];
