@@ -16,7 +16,7 @@ include_directories(${PROJECT_ROOT}/Drivers/CMSIS/Device/ST/STM32F4xx/Include)
 include_directories(${PROJECT_ROOT}/Drivers/CMSIS/Include)
 include_directories(${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Inc)
 
-file(GLOB SRCS src/*.cpp)
+file(GLOB SRCS src/*.cc src/*.cpp src/**/*.cc src/**/*.cpp)
 
 add_library(mecha STATIC ${SRCS})
 
