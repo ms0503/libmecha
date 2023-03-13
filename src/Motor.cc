@@ -14,11 +14,16 @@
 */
 
 #include "Motor.hh"
-#include "params.hh"
 
 using namespace LibMecha::v1;
 
-Motor::Motor(const CAN_HandleTypeDef &canHandle) : _hcan(canHandle), _can(canHandle), _md(canHandle, _can) {
+Motor::Motor(const CAN_HandleTypeDef &canHandle) : Motor(canHandle, 0x10, 0x11, 0x12, 0x13) {
+}
+
+Motor::Motor(const CAN_HandleTypeDef &canHandle, const MotorAddress addresses) : _hcan(canHandle), _can(canHandle), _md(canHandle, _can), _addresses(addresses) {
+}
+
+Motor::Motor(const CAN_HandleTypeDef &canHandle, const uint8_t addrFL, const uint8_t addrFR, const uint8_t addrRL, const uint8_t addrRR) : Motor(canHandle, { .FL = addrFL, .FR = addrFR, .RL = addrRL, .RR = addrRR }) {
 }
 
 Motor::~Motor() = default;
@@ -30,8 +35,8 @@ void Motor::init(const uint8_t canAddr) {
 }
 
 void Motor::update(const MotorState state) {
-    _md.setDuty(ADDR_MOTOR_FL, state.FL);
-    _md.setDuty(ADDR_MOTOR_FR, state.FR);
-    _md.setDuty(ADDR_MOTOR_RL, state.RL);
-    _md.setDuty(ADDR_MOTOR_RR, state.RR);
+    _md.setDuty(_addresses.FL, state.FL);
+    _md.setDuty(_addresses.FR, state.FR);
+    _md.setDuty(_addresses.RL, state.RL);
+    _md.setDuty(_addresses.RR, state.RR);
 }

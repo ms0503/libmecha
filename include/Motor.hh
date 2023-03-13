@@ -38,12 +38,20 @@ namespace LibMecha {
             int32_t RR;
         } MotorState;
 
+        /// モーターアドレス
+        typedef struct {
+            uint8_t FL;
+            uint8_t FR;
+            uint8_t RL;
+            uint8_t RR;
+        } MotorAddress;
+
         /// モーター
         enum class EnumMotor : uint8_t {
-            FL = ADDR_MOTOR_FL,
-            FR = ADDR_MOTOR_FR,
-            RL = ADDR_MOTOR_RL,
-            RR = ADDR_MOTOR_RR
+            FL,
+            FR,
+            RL,
+            RR
         };
 
         /// モーターの回転方向
@@ -56,6 +64,8 @@ namespace LibMecha {
         class Motor {
         public:
             explicit Motor(const CAN_HandleTypeDef &canHandle);
+            explicit Motor(const CAN_HandleTypeDef &canHandle, MotorAddress addresses);
+            explicit Motor(const CAN_HandleTypeDef &canHandle, uint8_t addrFL, uint8_t addrFR, uint8_t addrRL, uint8_t addrRR);
             ~Motor();
             void init(uint8_t canAddr);
             void update(MotorState state);
@@ -64,6 +74,7 @@ namespace LibMecha {
             Can _can;
             CAN_HandleTypeDef _hcan;
             MotorDriver _md;
+            MotorAddress _addresses;
         };
     }
 }

@@ -34,12 +34,12 @@ namespace LibMecha {
                     kSetParamP     = 0x02,
                     kSetParamI     = 0x03,
                     kSetParamD     = 0x04,
-          canTxHeaderStruct          kSetParamLIMIT = 0x05,
+                    kSetParamLIMIT = 0x05,
                     kSetParamPPM   = 0x06,
                     kEmergency     = 0x80
                 };
 
-                MotorDriver(const CAN_HandleTypeDef &canHandle, const Can &can);
+                explicit MotorDriver(const CAN_HandleTypeDef &canHandle, const Can &can);
                 ~MotorDriver();
                 void init();
                 void pidInit(uint8_t address, float kp, float ki, float kd, uint32_t maxRpm, uint32_t kppm);
