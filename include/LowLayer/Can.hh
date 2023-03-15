@@ -16,46 +16,75 @@
 #ifndef _LIBMECHA_CAN_HH_
 #define _LIBMECHA_CAN_HH_
 
-#include <array>
 #include "stm32f4xx_hal.h"
+#include <array>
+#include <cstdint>
+#include <vector>
 
 namespace LibMecha {
-    inline namespace v1 {
+    inline namespace v2 {
         namespace LowLayer {
+            /// CAN通信用低レイヤークラス
             class Can {
             public:
+                /**
+                 * コンストラクタ
+                 * @param canHandle HALのCANハンドル
+                 */
                 explicit Can(const CAN_HandleTypeDef &canHandle);
+                /**
+                 * デストラクタ
+                 */
                 ~Can();
-                void setFilter(uint8_t address);
-                void sendRemote(uint8_t address);
-                template<std::size_t N> bool send(uint8_t address, const uint8_t (&sendData)[N]);
-                template<std::size_t N> bool send(uint8_t address, const std::array<uint8_t, N> &sendData);
-                inline void setUp(const uint8_t address, const uint32_t receiveInterrupt) {
-                    _receiveInterrupt = receiveInterrupt;
-                    setFilter(address);
-                    HAL_CAN_ActivateNotification(&_hcan, _receiveInterrupt);
-                    HAL_CAN_Start(&_hcan);
+                /**
+                 * CANのフィルターの設定
+                 * @param address CANアドレス
+                 */
+                void setFilter(std::uint8_t address);
+                /**
+                 * リモートへデータの送信
+                 * @param address リモートCANアドレス
+                 */
+                void sendRemote(std::uint8_t address);
+                /**
+                 * データの送信
+                 * @param address 送信先CANアドレス
+                 * @param sendData 送信データ
+                 * @param sendDataSize 送信データサイズ
+                 * @return 送信完了
+                 */
+                bool send(std::uint8_t address, std::uint8_t *sendData, std::size_t sendDataSize);
+                /**
+                 * データの送信
+                 * @param address 送信先CANアドレス
+                 * @param sendData 送信データ
+                 * @param sendDataSize 送信データサイズ
+                 * @return 送信完了
+                 */
+                inline bool send(std::uint8_t address, std::vector<uint8_t> sendData, std::size_t sendDataSize) {
+                    return send(address, sendData.data(), sendDataSize);
                 }
-                inline void setCANHandle(const CAN_HandleTypeDef &canHandle) {
-                    _hcan = canHandle;
-                }
-                inline std::array<uint8_t, 8> getMessage(const uint8_t canRxFifo) {
-                    std::array<uint8_t, 8> result = {0};
-                    CAN_RxHeaderTypeDef rxHeader;
-                    uint8_t rxData[8] = {0};
-
-                    HAL_CAN_GetRxMessage(&_hcan, canRxFifo, &rxHeader, rxData);
-                    for (uint8_t i = 0; i < sizeof(rxData); i++) result.at(i) = rxData[i];
-
-                    return result;
-                }
+                /**
+                 * 初期化
+                 * @param address 自身のCANアドレス
+                 * @param receiveInterrupt 受信割り込み
+                 */
+                void init(uint8_t address, uint32_t receiveInterrupt);
+                /**
+                 * メッセージの受信
+                 * @param canRxFifo CAN受信FIFO
+                 * @return 受信データ
+                 */
+                std::array<std::uint8_t, 8> getMessage(std::uint8_t canRxFifo);
 
             private:
+                /// HALのCANハンドル
                 CAN_HandleTypeDef _hcan{};
-                uint32_t _receiveInterrupt = CAN_IT_RX_FIFO0_MSG_PENDING;
+                /// 受信割り込み
+                std::uint32_t _receiveInterrupt = CAN_IT_RX_FIFO0_MSG_PENDING;
             };
-        }
-    }
-}
+        }// namespace LowLayer
+    }    // namespace v2
+}// namespace LibMecha
 
 #endif// _LIBMECHA_CAN_HH_

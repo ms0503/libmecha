@@ -13,8 +13,8 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MYLIBINC_CONTROLLER_HH_
-#define MYLIBINC_CONTROLLER_HH_
+#ifndef _LIBMECHA_CONTROLLER_HH_
+#define _LIBMECHA_CONTROLLER_HH_
 
 #include "LowLayer/SBDBT.hh"
 #include "Motor.hh"
@@ -24,50 +24,88 @@
 #include <string>
 
 namespace LibMecha {
-    inline namespace v1 {
-        using namespace LowLayer;
-
-        /// スティックの角度(右0・反時計回り・rad)
-        typedef struct {
-            long double left;
-            long double right;
-        } StickTheta;
+    inline namespace v2 {
+        namespace LMLL = LowLayer;
 
         /// コントローラー入力変換クラス
         class Controller {
         public:
-            explicit Controller(const UART_HandleTypeDef &uartHandle);
+            /// スティックの角度(右0・反時計回り・rad)
+            struct StickTheta {
+                /// 左スティック
+                long double left;
+                /// 右スティック
+                long double right;
+            };
+
+            /**
+             * コンストラクタ
+             * @param usart UART/USARTペリフェラル
+             */
+            explicit Controller(USART_TypeDef *usart);
+            /**
+             * デストラクタ
+             */
             ~Controller();
             /**
-             * スティック入力を基にモーター信号を生成する
+             * スティック入力を基にしたモーター信号の生成
              * @return モーター信号
              */
-            MotorState stickToMotor();
+            Motor::State stickToMotor();
+            /**
+             * 初期化
+             */
             void init();
-            bool isPush(SBDBT::ButtonState button);
-            bool isPushEdge(SBDBT::ButtonState button);
-            bool isRelease(SBDBT::ButtonState button);
-            bool isReleaseEdge(SBDBT::ButtonState button);
-            void receiveProcessing(const UART_HandleTypeDef *uartHandle, const std::function<void(const SBDBT::ButtonAssignment &bs)> &callback);
+            /**
+             * 押されているかの取得
+             * @param button ボタン
+             * @return 押されているか
+             */
+            bool isPush(LMLL::SBDBT::ButtonState button);
+            /**
+             * 押された瞬間かの取得
+             * @param button ボタン
+             * @return 押された瞬間か
+             */
+            bool isPushEdge(LMLL::SBDBT::ButtonState button);
+            /**
+             * 離れているかの取得
+             * @param button ボタン
+             * @return 離れているか
+             */
+            bool isRelease(LMLL::SBDBT::ButtonState button);
+            /**
+             * 離された瞬間かの取得
+             * @param button ボタン
+             * @return 離された瞬間か
+             */
+            bool isReleaseEdge(LMLL::SBDBT::ButtonState button);
+            /**
+             * コントローラー入力の取得
+             * @param callback コントローラー入力のハンドラ
+             */
+            void receiveProcessing(const std::uint8_t (&receiveData)[LMLL::SBDBT_RECEIVE_SIZE], const std::function<void(const LMLL::SBDBT::ButtonAssignment &bs)> &callback);
 
         private:
-            UART_HandleTypeDef _uartHandle;
-            SBDBT _sbdbt;
-            SBDBT::ButtonAssignment _bs;
-            uint8_t _sbdbtData[SBDBT_RECEIVE_SIZE];
+            /// UART/USARTのペリフェラル
+            USART_TypeDef *_usart;
+            /// SBDBTクラスのインスタンス
+            LMLL::SBDBT _sbdbt;
+            /// ボタンアサイン
+            LMLL::SBDBT::ButtonAssignment _bs;
 
             /// スティックのデッドゾーン
             static const std::map<EnumMotor, int8_t> DEAD_ZONES;
 
             /**
-             * スティック入力から角度を導出する
+             * スティック入力による角度の導出
              * @param x スティック横方向
              * @param y スティック縦方向
              * @return 角度(rad)
              */
             static long double stickToTheta(int8_t x, int8_t y);
             /**
-             * 左右スティック入力から各角度を導出する
+             * 左右スティック入力による各角度の導出
              * @param leftX 左スティック横方向
              * @param leftY 左スティック縦方向
              * @param rightX 右スティック横方向
@@ -76,7 +114,7 @@ namespace LibMecha {
              */
             static StickTheta sticksToTheta(int8_t leftX, int8_t leftY, int8_t rightX, int8_t rightY);
         };
-    }
-}
+    }// namespace v2
+}// namespace LibMecha
 
-#endif // MYLIBINC_CONTROLLER_HH_
+#endif// _LIBMECHA_CONTROLLER_HH_
