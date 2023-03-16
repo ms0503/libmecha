@@ -112,15 +112,15 @@ namespace LibMecha {
                  */
                 inline void init() {
                     _lastButtonState = buttonAssignmentInit();
-                    _as = {.RX = 0, .RY = 0, .LX = 0, .LY = 0};
-                    for(std::uint8_t &i: _processedReceiveData) i = 0;
+                    _as = { .RX = 0, .RY = 0, .LX = 0, .LY = 0 };
+                    for(std::uint8_t &i : _processedReceiveData) i = 0;
                 }
                 /**
                  * 受信データのバリデーション
                  * @param receiveData 受信データ
                  * @return 受信データが有効か
                  */
-                bool receiveCheck(std::uint8_t (&receiveData)[SBDBT_RECEIVE_SIZE]);
+                bool receiveCheck(const std::uint8_t (&receiveData)[SBDBT_RECEIVE_SIZE]);
                 /**
                  * 受信データのバリデーション
                  * @param receiveData 受信データ
@@ -195,7 +195,7 @@ namespace LibMecha {
                 static ButtonState identifyButtonState(ButtonState lastButtonState, bool isPush);
             };
         }// namespace LowLayer
-    }    // namespace v2
+    }// namespace v2
 }// namespace LibMecha
 
 #endif// _LIBMECHA_SBDBT_HH_

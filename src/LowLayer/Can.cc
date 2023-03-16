@@ -21,7 +21,8 @@
 namespace LibMecha {
     inline namespace v2 {
         namespace LowLayer {
-            Can::Can(const CAN_HandleTypeDef &canHandle) : _hcan(canHandle) {
+            Can::Can(const CAN_HandleTypeDef &canHandle):
+                _hcan(canHandle) {
             }
 
             Can::~Can() = default;
@@ -33,7 +34,7 @@ namespace LibMecha {
                 canFilter.FilterScale = CAN_FILTERSCALE_32BIT;
                 canFilter.FilterMaskIdHigh = 0xFFE0;
                 canFilter.FilterMaskIdLow = 0x0000;
-                canFilter.FilterIdHigh = (uint16_t) ((uint16_t) address << 5);
+                canFilter.FilterIdHigh = static_cast<std::uint16_t>(address) << 5;
                 canFilter.FilterIdLow = 0x0000;
                 canFilter.FilterFIFOAssignment = CAN_FILTER_FIFO1;
                 canFilter.FilterActivation = ENABLE;
@@ -45,7 +46,7 @@ namespace LibMecha {
             void Can::sendRemote(const std::uint8_t address) {
                 CAN_TxHeaderTypeDef canTxHeader;
                 std::uint32_t mailBox;
-                std::array<uint8_t, 1> data{};
+                std::array<std::uint8_t, 1> data {};
                 canTxHeader.StdId = address;
                 canTxHeader.DLC = 1;
                 canTxHeader.ExtId = 0x00;
@@ -93,7 +94,7 @@ namespace LibMecha {
             }
 
             std::array<std::uint8_t, 8> Can::getMessage(const std::uint8_t canRxFifo) {
-                std::array<std::uint8_t, 8> result{};
+                std::array<std::uint8_t, 8> result {};
                 CAN_RxHeaderTypeDef rxHeader;
 
                 HAL_CAN_GetRxMessage(&_hcan, canRxFifo, &rxHeader, result.data());
@@ -101,7 +102,7 @@ namespace LibMecha {
                 return result;
             }
         }// namespace LowLayer
-    }    // namespace v2
+    }// namespace v2
 }// namespace LibMecha
 
 #pragma clang diagnostic pop

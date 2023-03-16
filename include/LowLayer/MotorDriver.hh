@@ -29,7 +29,7 @@ namespace LibMecha {
             class MotorDriver {
             public:
                 /// モータドライバーのコマンド
-                enum class DriveCommand : uint8_t {
+                enum class DriveCommand : std::uint8_t {
                     /// Duty比の設定
                     kDuty = 0x00,
                     /// PID制御のターゲット回転数の設定
@@ -147,7 +147,7 @@ namespace LibMecha {
                 bool updateDataSend(std::uint8_t address, DriveCommand cmd, const std::uint8_t sendData[4]);
             };
         }// namespace LowLayer
-    }    // namespace v2
+    }// namespace v2
 }// namespace LibMecha
 
 #endif// _LIBMECHA_MOTORDRIVER_HH_

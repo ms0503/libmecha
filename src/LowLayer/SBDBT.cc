@@ -19,22 +19,24 @@
 namespace LibMecha {
     inline namespace v2 {
         namespace LowLayer {
-            SBDBT::SBDBT(USART_TypeDef *const usart) : _usart(usart), _lastButtonState(), _processedReceiveData() {}
+            SBDBT::SBDBT(USART_TypeDef *const usart):
+                _usart(usart), _lastButtonState(), _processedReceiveData() {
+            }
             SBDBT::~SBDBT() = default;
 
-            bool SBDBT::receiveCheck(std::uint8_t (&receiveData)[SBDBT_RECEIVE_SIZE]) {
+            bool SBDBT::receiveCheck(const std::uint8_t (&receiveData)[SBDBT_RECEIVE_SIZE]) {
                 return receiveCheck(std::to_array(receiveData));
             }
 
             bool SBDBT::receiveCheck(const std::array<std::uint8_t, SBDBT_RECEIVE_SIZE> receiveData) {
-                std::array<std::uint8_t, SBDBT_RECEIVE_SIZE> processedReceiveData{};
+                std::array<std::uint8_t, SBDBT_RECEIVE_SIZE> processedReceiveData {};
                 std::uint8_t b;
-                std::uint16_t checksum;
+                std::uint8_t checksum;
 
                 for(std::uint8_t i = 0; i < sizeof(receiveData); i++) {
                     if(receiveData.at(i) == kStartByte) {
                         b = i;
-                        for(std::uint8_t &a: processedReceiveData) {
+                        for(std::uint8_t &a : processedReceiveData) {
                             if(7 < b) b = 0;
                             //data[a] = receiveData[7 - i + a];
                             a = receiveData[b];
@@ -43,8 +45,8 @@ namespace LibMecha {
                     }
                 }
                 if(processedReceiveData.at(0) == kStartByte) {
-                    checksum = std::accumulate(processedReceiveData.begin(), processedReceiveData.end(), 0) & 0b0111'1111;
-                    if(static_cast<std::uint8_t>(checksum) == processedReceiveData.at(7)) {
+                    checksum = std::accumulate(processedReceiveData.begin() + 1, processedReceiveData.end() - 1, 0) & 0b0111'1111;
+                    if(checksum == processedReceiveData.at(7)) {
                         std::copy(processedReceiveData.begin(), processedReceiveData.end(), _processedReceiveData.begin());
 
                         return true;
@@ -55,7 +57,7 @@ namespace LibMecha {
             }
 
             SBDBT::ButtonAssignment SBDBT::receiveProcessing() {
-                ButtonAssignment button{};
+                ButtonAssignment button {};
                 std::uint16_t receiveData;
                 _as.LX = static_cast<std::int8_t>(_processedReceiveData.at(3) - 64);
                 _as.LY = static_cast<std::int8_t>(-(_processedReceiveData.at(4) - 64));
@@ -84,7 +86,7 @@ namespace LibMecha {
             }
 
             SBDBT::ButtonAssignment SBDBT::buttonAssignmentInit() {
-                ButtonAssignment ba{};
+                ButtonAssignment ba {};
                 ba.Up = SBDBT::ButtonState::kRelease;
                 ba.Down = SBDBT::ButtonState::kRelease;
                 ba.Right = SBDBT::ButtonState::kRelease;
@@ -110,17 +112,15 @@ namespace LibMecha {
                     case ButtonState::kRelease:
                     case ButtonState::kReleaseEdge:
                         if(isPush) return ButtonState::kPushEdge;
-                        else
-                            return ButtonState::kRelease;
+                        else return ButtonState::kRelease;
                     case ButtonState::kPush:
                     case ButtonState::kPushEdge:
                         if(isPush) return ButtonState::kPush;
-                        else
-                            return ButtonState::kReleaseEdge;
+                        else return ButtonState::kReleaseEdge;
                     default:
                         return ButtonState::kRelease;
                 }
             }
         }// namespace LowLayer
-    }    // namespace v2
+    }// namespace v2
 }// namespace LibMecha

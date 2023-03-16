@@ -61,7 +61,7 @@ namespace LibMecha {
                  * @param sendDataSize 送信データサイズ
                  * @return 送信完了
                  */
-                inline bool send(std::uint8_t address, std::vector<uint8_t> sendData, std::size_t sendDataSize) {
+                inline bool send(std::uint8_t address, std::vector<std::uint8_t> sendData, std::size_t sendDataSize) {
                     return send(address, sendData.data(), sendDataSize);
                 }
                 /**
@@ -69,7 +69,7 @@ namespace LibMecha {
                  * @param address 自身のCANアドレス
                  * @param receiveInterrupt 受信割り込み
                  */
-                void init(uint8_t address, uint32_t receiveInterrupt);
+                void init(std::uint8_t address, std::uint32_t receiveInterrupt);
                 /**
                  * メッセージの受信
                  * @param canRxFifo CAN受信FIFO
@@ -79,12 +79,12 @@ namespace LibMecha {
 
             private:
                 /// HALのCANハンドル
-                CAN_HandleTypeDef _hcan{};
+                CAN_HandleTypeDef _hcan {};
                 /// 受信割り込み
                 std::uint32_t _receiveInterrupt = CAN_IT_RX_FIFO0_MSG_PENDING;
             };
         }// namespace LowLayer
-    }    // namespace v2
+    }// namespace v2
 }// namespace LibMecha
 
 #endif// _LIBMECHA_CAN_HH_

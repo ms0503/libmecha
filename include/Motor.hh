@@ -23,8 +23,6 @@
 
 namespace LibMecha {
     inline namespace v2 {
-        namespace LMLL = LowLayer;
-
         /// モーター
         enum class EnumMotor : std::uint8_t {
             FL,
@@ -114,11 +112,11 @@ namespace LibMecha {
 
         private:
             /// Canクラスのインスタンス
-            LMLL::Can _can;
+            LowLayer::Can _can;
             /// HALのCANハンドル
             CAN_HandleTypeDef _hcan;
             /// MotorDriverクラスのインスタンス
-            LMLL::MotorDriver _md;
+            LowLayer::MotorDriver _md;
             /// モータードライバーのCANアドレス
             Address _addresses;
             /// モーターの最高速度

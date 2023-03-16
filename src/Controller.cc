@@ -21,76 +21,74 @@
 
 namespace LibMecha {
     inline namespace v2 {
-        namespace LMLL = LowLayer;
+        const std::map<EnumMotor, std::int8_t> Controller::DEAD_ZONES = {
+            { EnumMotor::FL, 0 },
+            { EnumMotor::FR, 0 },
+            { EnumMotor::RL, 0 },
+            { EnumMotor::RR, 0 }
+        };
 
-        const std::map<EnumMotor, int8_t> Controller::DEAD_ZONES = {
-            {EnumMotor::FL,
-             0},
-            {EnumMotor::FR,
-             0},
-            {EnumMotor::RL,
-             0},
-            {EnumMotor::RR,
-             0}};
-
-        Controller::Controller(USART_TypeDef *const usart) : _usart(usart), _sbdbt(usart), _bs() {
+        Controller::Controller(USART_TypeDef *const usart):
+            _usart(usart), _sbdbt(usart), _bs() {
         }
 
         Controller::~Controller() = default;
 
         Motor::State Controller::stickToMotor() {
-            const LMLL::SBDBT::AnalogState as = _sbdbt.getAnalogState();
-            const long double FL = 3. / 8 * M_PI;
-            const long double FR = 1. / 8 * M_PI;
-            const long double RL = 5. / 8 * M_PI;
-            const long double RR = 7. / 8 * M_PI;
+            const LowLayer::SBDBT::AnalogState as = _sbdbt.getAnalogState();
+            const float FL = 3.0f / 8.0f * M_PI;
+            const float FR = 1.0f / 8.0f * M_PI;
+            const float RL = 5.0f / 8.0f * M_PI;
+            const float RR = 7.0f / 8.0f * M_PI;
             const StickTheta theta = sticksToTheta(as.LX, as.LY, as.RX, as.RY);
-            const long double powerFL = sinl(theta.left + FL) * Motor::getMaxSpeed();
-            const long double powerFR = sinl(theta.left + FR) * Motor::getMaxSpeed();
-            const long double powerRL = sinl(theta.left + RL) * Motor::getMaxSpeed();
-            const long double powerRR = sinl(theta.left + RR) * Motor::getMaxSpeed();
-            const long double powerMax = fmaxl(fmaxl(fmaxl(fabsl(powerFL), fabsl(powerFR)), fabsl(powerRL)), fabsl(powerRR));
+            const float powerFL = std::sin(theta.left + FL) * static_cast<float>(Motor::getMaxSpeed());
+            const float powerFR = std::sin(theta.left + FR) * static_cast<float>(Motor::getMaxSpeed());
+            const float powerRL = std::sin(theta.left + RL) * static_cast<float>(Motor::getMaxSpeed());
+            const float powerRR = std::sin(theta.left + RR) * static_cast<float>(Motor::getMaxSpeed());
+            const float powerMax = std::max<float>(std::max<float>(std::max<float>(std::abs(powerFL), std::abs(powerFR)), std::abs(powerRL)), std::abs(powerRR));
             return {
-                .FL = static_cast<int32_t>(powerFL * powerMax),
-                .FR = static_cast<int32_t>(powerFR * powerMax),
-                .RL = static_cast<int32_t>(powerRL * powerMax),
-                .RR = static_cast<int32_t>(powerRR * powerMax)};
+                .FL = static_cast<std::int32_t>(powerFL * powerMax),
+                .FR = static_cast<std::int32_t>(powerFR * powerMax),
+                .RL = static_cast<std::int32_t>(powerRL * powerMax),
+                .RR = static_cast<std::int32_t>(powerRR * powerMax)
+            };
         }
 
         void Controller::init() {
             _sbdbt.init();
         }
 
-        bool Controller::isPush(LMLL::SBDBT::ButtonState button) {
-            return button == LMLL::SBDBT::ButtonState::kPush;
+        bool Controller::isPush(LowLayer::SBDBT::ButtonState button) {
+            return button == LowLayer::SBDBT::ButtonState::kPush;
         }
 
-        bool Controller::isPushEdge(LMLL::SBDBT::ButtonState button) {
-            return button == LMLL::SBDBT::ButtonState::kPushEdge;
+        bool Controller::isPushEdge(LowLayer::SBDBT::ButtonState button) {
+            return button == LowLayer::SBDBT::ButtonState::kPushEdge;
         }
 
-        bool Controller::isRelease(LMLL::SBDBT::ButtonState button) {
-            return button == LMLL::SBDBT::ButtonState::kRelease;
+        bool Controller::isRelease(LowLayer::SBDBT::ButtonState button) {
+            return button == LowLayer::SBDBT::ButtonState::kRelease;
         }
 
-        bool Controller::isReleaseEdge(LMLL::SBDBT::ButtonState button) {
-            return button == LMLL::SBDBT::ButtonState::kReleaseEdge;
+        bool Controller::isReleaseEdge(LowLayer::SBDBT::ButtonState button) {
+            return button == LowLayer::SBDBT::ButtonState::kReleaseEdge;
         }
 
-        void Controller::receiveProcessing(const std::uint8_t (&receiveData)[LMLL::SBDBT_RECEIVE_SIZE], const std::function<void(const LMLL::SBDBT::ButtonAssignment &bs)> &callback) {
+        void Controller::receiveProcessing(const std::uint8_t (&receiveData)[LowLayer::SBDBT_RECEIVE_SIZE], const std::function<void(const LowLayer::SBDBT::ButtonAssignment &bs)> &callback) {
             if(!_sbdbt.receiveCheck(std::to_array(receiveData))) return;
             _bs = _sbdbt.receiveProcessing();
             callback(_bs);
         }
 
-        long double Controller::stickToTheta(const int8_t x, const int8_t y) {
-            return atanl(static_cast<float>(y) / static_cast<float>(x));
+        float Controller::stickToTheta(const float x, const float y) {
+            return std::atan2(y, x);
         }
 
-        Controller::StickTheta Controller::sticksToTheta(const int8_t leftX, const int8_t leftY, const int8_t rightX, const int8_t rightY) {
+        Controller::StickTheta Controller::sticksToTheta(const float leftX, const float leftY, const float rightX, const float rightY) {
             return {
                 .left = stickToTheta(leftX, leftY),
-                .right = stickToTheta(rightX, rightY)};
+                .right = stickToTheta(rightX, rightY)
+            };
         }
     }// namespace v2
 }// namespace LibMecha

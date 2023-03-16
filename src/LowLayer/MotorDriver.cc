@@ -18,7 +18,8 @@
 namespace LibMecha {
     inline namespace v2 {
         namespace LowLayer {
-            MotorDriver::MotorDriver(const CAN_HandleTypeDef &canHandle, const Can &can) : _hcan(canHandle), _can(can) {
+            MotorDriver::MotorDriver(const CAN_HandleTypeDef &canHandle, const Can &can):
+                _hcan(canHandle), _can(can) {
             }
 
             MotorDriver::~MotorDriver() = default;
@@ -45,52 +46,56 @@ namespace LibMecha {
             }
 
             bool MotorDriver::setTargetRPM(const std::uint8_t address, const std::int32_t targetRpm) {
-                const std::uint8_t sendDataArray[4]{
+                const std::uint8_t sendDataArray[4] {
                     static_cast<std::uint8_t>(targetRpm >> 24),
                     static_cast<std::uint8_t>(targetRpm >> 16),
                     static_cast<std::uint8_t>(targetRpm >> 8),
-                    static_cast<std::uint8_t>(targetRpm)};
+                    static_cast<std::uint8_t>(targetRpm)
+                };
 
                 return updateDataSend(address, DriveCommand::kPID, sendDataArray);
             }
 
             bool MotorDriver::setDuty(const std::uint8_t address, const std::int32_t duty) {
-                const std::uint8_t sendDataArray[4]{
+                const std::uint8_t sendDataArray[4] {
                     static_cast<std::uint8_t>(duty >> 24),
                     static_cast<std::uint8_t>(duty >> 16),
                     static_cast<std::uint8_t>(duty >> 8),
-                    static_cast<std::uint8_t>(duty)};
+                    static_cast<std::uint8_t>(duty)
+                };
 
                 return updateDataSend(address, DriveCommand::kDuty, sendDataArray);
             }
 
             bool MotorDriver::setParameter(const std::uint8_t address, const DriveCommand mode, const std::uint32_t uparamValue) {
                 if((mode == DriveCommand::kPID) || (mode == DriveCommand::kDuty) || (mode == DriveCommand::kEmergency)) return false;
-                const std::uint8_t sendDataArray[4]{
+                const std::uint8_t sendDataArray[4] {
                     static_cast<std::uint8_t>(uparamValue >> 24),
                     static_cast<std::uint8_t>(uparamValue >> 16),
                     static_cast<std::uint8_t>(uparamValue >> 8),
-                    static_cast<std::uint8_t>(uparamValue)};
+                    static_cast<std::uint8_t>(uparamValue)
+                };
 
                 return updateDataSend(address, mode, sendDataArray);
             }
 
             bool MotorDriver::emergency(const std::uint8_t address) {
-                const std::uint8_t sendDataArray[4]{};
+                const std::uint8_t sendDataArray[4] {};
 
                 return updateDataSend(address, DriveCommand::kEmergency, sendDataArray);
             }
 
             bool MotorDriver::updateDataSend(const std::uint8_t address, const DriveCommand cmd, const std::uint8_t sendData[4]) {
-                std::array<std::uint8_t, 4 + 1> sendDataArray{
+                std::array<std::uint8_t, 4 + 1> sendDataArray {
                     static_cast<std::uint8_t>(cmd),
                     sendData[0],
                     sendData[1],
                     sendData[2],
-                    sendData[3]};
+                    sendData[3]
+                };
 
                 return _can.send(address, sendDataArray.data(), 4 + 1);
             }
         }// namespace LowLayer
-    }    // namespace v2
+    }// namespace v2
 }// namespace LibMecha
