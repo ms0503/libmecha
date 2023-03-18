@@ -3,6 +3,7 @@ AccessModifierOffset: -4
 AlignAfterOpenBracket: BlockIndent
 AlignConsecutiveAssignments: None
 AlignOperands: Align
+IndentExternBlock: Indent
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
@@ -31,11 +32,12 @@ BraceWrapping:
   SplitEmptyFunction: false
   SplitEmptyRecord: false
 Cpp11BracedListStyle: false
+AlignArrayOfStructures: None
 BreakBeforeBinaryOperators: None
 BreakBeforeTernaryOperators: true
 PackConstructorInitializers: NextLine
 BreakConstructorInitializers: AfterColon
-BreakInheritanceList: BeforeColon
+BreakInheritanceList: AfterColon
 ColumnLimit: 0
 CompactNamespaces: false
 ContinuationIndentWidth: 4

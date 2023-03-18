@@ -19,13 +19,16 @@ namespace LibMecha {
     inline namespace v2 {
         std::int32_t Motor::_maxSpeed = 0;
 
-        Motor::Motor(const CAN_HandleTypeDef &canHandle) : Motor(canHandle, 0x10, 0x11, 0x12, 0x13) {
+        Motor::Motor(const CAN_HandleTypeDef &canHandle):
+            Motor(canHandle, 0x10, 0x11, 0x12, 0x13) {
         }
 
-        Motor::Motor(const CAN_HandleTypeDef &canHandle, const Address addresses) : _hcan(canHandle), _can(canHandle), _md(canHandle, _can), _addresses(addresses) {
+        Motor::Motor(const CAN_HandleTypeDef &canHandle, const Address addresses):
+            _hcan(canHandle), _can(canHandle), _md(canHandle, _can), _addresses(addresses) {
         }
 
-        Motor::Motor(const CAN_HandleTypeDef &canHandle, const std::uint8_t addrFL, const std::uint8_t addrFR, const std::uint8_t addrRL, const std::uint8_t addrRR) : Motor(canHandle, {.FL = addrFL, .FR = addrFR, .RL = addrRL, .RR = addrRR}) {
+        Motor::Motor(const CAN_HandleTypeDef &canHandle, const std::uint8_t addrFL, const std::uint8_t addrFR, const std::uint8_t addrRL, const std::uint8_t addrRR):
+            Motor(canHandle, { .FL = addrFL, .FR = addrFR, .RL = addrRL, .RR = addrRR }) {
         }
 
         Motor::~Motor() = default;
