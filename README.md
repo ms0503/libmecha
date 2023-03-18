@@ -1,14 +1,17 @@
 # libmecha
-libmechaはモータードライバー、SBDBT、CANを操作するためのライブラリです。
+libmechaはSBDBTを用いたBT接続のコントローラー・メカトロ製モータードライバー制御のモーターを操作するためのライブラリです。
+低レイヤー層としてCAN・モータードライバー・SBDBT操作用ライブラリが同梱されています。
 
 ## Dependencies
-- STM32f407VGT(恐らくSTM32f4ファミリであれば大丈夫...なのだろうか)
+- STM32F4シリーズ
 - STM32の開発環境
+  - 例：
   - 各種IDE
+    - 例：
     - STM32CubeIDE
-    - or System Workbench for STM32 [Deprecated]
-    - or CLion
-  - or CMake 3.1〜
+    - System Workbench for STM32 [非推奨]
+    - CLion
+  - CMake 3.1〜
     - g++(arm-none-eabi) 7.1〜
 
 ## Installing
@@ -35,13 +38,13 @@ libmechaはモータードライバー、SBDBT、CANを操作するためのラ�
 ## Using
 [Installing](#installing)を実行した後であればルートプロジェクトをビルドする際に一緒にビルドされます。
 単体でビルドする場合、
-- Linux/macOSの場合:  
+- Linux/macOSの場合:
   bash:
   ```
   $ cd libmecha
   $ ./build.sh
   ```
-- Windowsの場合:  
+- Windowsの場合:
   PowerShell:
   ```
   PS> Set-ExecutionPolicy -Scope Process Bypass
@@ -62,6 +65,6 @@ libmechaはモータードライバー、SBDBT、CANを操作するためのラ�
 ![GNU LGPL Logo](https://www.gnu.org/graphics/lgplv3-147x51.png)
 
 ## Author
-- youda (library code)
-- ms0503 (build system)
+- youda (low layer code)
+- ms0503 (front layer code, build system)
 

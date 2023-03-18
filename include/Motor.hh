@@ -13,41 +13,18 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MYLIBINC_MOTOR_HH_
-#define MYLIBINC_MOTOR_HH_
+#ifndef _LIBMECHA_MOTOR_HH_
+#define _LIBMECHA_MOTOR_HH_
 
 #include "LowLayer/MotorDriver.hh"
-#include "params.hh"
 #include <cstdint>
 #include <map>
 #include <string>
 
 namespace LibMecha {
-    inline namespace v1 {
-        using namespace LowLayer;
-
-        /// モーター信号
-        typedef struct {
-            /// 左前方
-            int32_t FL;
-            /// 右前方
-            int32_t FR;
-            /// 左後方
-            int32_t RL;
-            /// 右後方
-            int32_t RR;
-        } MotorState;
-
-        /// モーターアドレス
-        typedef struct {
-            uint8_t FL;
-            uint8_t FR;
-            uint8_t RL;
-            uint8_t RR;
-        } MotorAddress;
-
+    inline namespace v2 {
         /// モーター
-        enum class EnumMotor : uint8_t {
+        enum class EnumMotor : std::uint8_t {
             FL,
             FR,
             RL,
@@ -55,28 +32,97 @@ namespace LibMecha {
         };
 
         /// モーターの回転方向
-        enum class EnumMotorRotate : int8_t {
+        enum class EnumMotorRotate : std::int8_t {
             LEFT = -1,
             RIGHT = 1
         };
 
-        /// モーター制御クラス
+        /// モーター制御用クラス
         class Motor {
         public:
+            /// モーターアドレス
+            struct Address {
+                /// 左前方
+                std::uint8_t FL;
+                /// 右前方
+                std::uint8_t FR;
+                /// 左後方
+                std::uint8_t RL;
+                /// 右後方
+                std::uint8_t RR;
+            };
+
+            /// モーター信号
+            struct State {
+                /// 左前方
+                std::int32_t FL;
+                /// 右前方
+                std::int32_t FR;
+                /// 左後方
+                std::int32_t RL;
+                /// 右後方
+                std::int32_t RR;
+            };
+
+            /**
+             * コンストラクタ
+             * @param canHandle HALのCANハンドル
+             */
             explicit Motor(const CAN_HandleTypeDef &canHandle);
-            explicit Motor(const CAN_HandleTypeDef &canHandle, MotorAddress addresses);
-            explicit Motor(const CAN_HandleTypeDef &canHandle, uint8_t addrFL, uint8_t addrFR, uint8_t addrRL, uint8_t addrRR);
+            /**
+             * コンストラクタ
+             * @param canHandle HALのCANハンドル
+             * @param addresses モータードライバーのCANアドレス
+             */
+            explicit Motor(const CAN_HandleTypeDef &canHandle, Address addresses);
+            /**
+             * コンストラクタ
+             * @param canHandle HALのCANハンドル
+             * @param addrFL 左前方のモータードライバーのCANアドレス
+             * @param addrFR 右前方のモータードライバーのCANアドレス
+             * @param addrRL 左後方のモータードライバーのCANアドレス
+             * @param addrRR 右後方のモータードライバーのCANアドレス
+             */
+            explicit Motor(const CAN_HandleTypeDef &canHandle, std::uint8_t addrFL, std::uint8_t addrFR, std::uint8_t addrRL, std::uint8_t addrRR);
+            /**
+             * デストラクタ
+             */
             ~Motor();
-            void init(uint8_t canAddr);
-            void update(MotorState state);
+            /**
+             * モーターの最高速度の取得
+             * @return モーターの最高速度
+             */
+            static std::int32_t getMaxSpeed();
+            /**
+             * モーターの最高速度の設定
+             * @param maxSpeed モーターの最高速度
+             */
+            static void setMaxSpeed(std::int32_t maxSpeed);
+            /**
+             * 初期化
+             * @param canAddr メインボードのCANアドレス
+             * @param maxSpeed モーターの最高速度
+             */
+            void init(std::uint8_t canAddr, std::int32_t maxSpeed);
+            /**
+             * モーター信号の更新
+             * @param state モーター信号
+             */
+            void update(State state);
 
         private:
-            Can _can;
+            /// Canクラスのインスタンス
+            LowLayer::Can _can;
+            /// HALのCANハンドル
             CAN_HandleTypeDef _hcan;
-            MotorDriver _md;
-            MotorAddress _addresses;
+            /// MotorDriverクラスのインスタンス
+            LowLayer::MotorDriver _md;
+            /// モータードライバーのCANアドレス
+            Address _addresses;
+            /// モーターの最高速度
+            static std::int32_t _maxSpeed;
         };
-    }
-}
+    }// namespace v2
+}// namespace LibMecha
 
-#endif // MYLIBINC_MOTOR_HH_
+#endif// _LIBMECHA_MOTOR_HH_
