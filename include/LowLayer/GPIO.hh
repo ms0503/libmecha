@@ -16,6 +16,7 @@
 #ifndef _LIBMECHA_GPIO_HH_
 #define _LIBMECHA_GPIO_HH_
 
+#include "Peripheral.hh"
 #include "stm32f4xx_ll_gpio.h"
 #include <cstdint>
 
@@ -23,8 +24,10 @@ namespace LibMecha {
     inline namespace v2 {
         namespace LowLayer {
             /// GPIO用低レイヤークラス
-            class GPIO {
+            class GPIO : public Peripheral {
             public:
+                using Peripheral::Peripheral;
+
                 /// GPIOピン情報
                 struct Pin {
                     /// GPIOペリフェラル
@@ -99,4 +102,4 @@ namespace LibMecha {
     }
 }
 
-#endif// _LIBMECHA_GPIO_HH_
+#endif // _LIBMECHA_GPIO_HH_

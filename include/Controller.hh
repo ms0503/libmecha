@@ -25,6 +25,8 @@
 
 namespace LibMecha {
     inline namespace v2 {
+        constexpr const int8_t STICK_MAX = 63;
+
         /// コントローラー入力変換クラス
         class Controller {
         public:
@@ -38,62 +40,94 @@ namespace LibMecha {
 
             /**
              * コンストラクタ
-             * @param usart UART/USARTペリフェラル
              */
-            explicit Controller(USART_TypeDef *usart);
+            explicit Controller();
             /**
              * デストラクタ
              */
             ~Controller();
+            inline LowLayer::SBDBT::AnalogState getStick() {
+                return _sbdbt.getAnalogState();
+            }
             /**
              * スティック入力を基にしたモーター信号の生成
+             * @param index モーターの通し番号(右を基準に反時計回り)
              * @return モーター信号
              */
-            Motor::State stickToMotor();
+            std::int32_t stickToMotor(std::uint8_t index);
             /**
              * 初期化
              */
-            void init();
+            inline void init(const std::int32_t deadZones[4]) {
+                _sbdbt.init();
+                setDeadZones(deadZones);
+            }
             /**
              * 押されているかの取得
              * @param button ボタン
              * @return 押されているか
              */
-            bool isPush(LowLayer::SBDBT::ButtonState button);
+            inline bool isPush(LowLayer::SBDBT::ButtonState button) {
+                return button == LowLayer::SBDBT::ButtonState::kPush;
+            }
             /**
              * 押された瞬間かの取得
              * @param button ボタン
              * @return 押された瞬間か
              */
-            bool isPushEdge(LowLayer::SBDBT::ButtonState button);
+            inline bool isPushEdge(LowLayer::SBDBT::ButtonState button) {
+                return button == LowLayer::SBDBT::ButtonState::kPushEdge;
+            }
             /**
              * 離れているかの取得
              * @param button ボタン
              * @return 離れているか
              */
-            bool isRelease(LowLayer::SBDBT::ButtonState button);
+            inline bool isRelease(LowLayer::SBDBT::ButtonState button) {
+                return button == LowLayer::SBDBT::ButtonState::kRelease;
+            }
             /**
              * 離された瞬間かの取得
              * @param button ボタン
              * @return 離された瞬間か
              */
-            bool isReleaseEdge(LowLayer::SBDBT::ButtonState button);
+            inline bool isReleaseEdge(LowLayer::SBDBT::ButtonState button) {
+                return button == LowLayer::SBDBT::ButtonState::kReleaseEdge;
+            }
+            inline bool receiveCheck(const std::uint8_t receiveData[LowLayer::SBDBT_RECEIVE_SIZE]) {
+                return _sbdbt.receiveCheck(receiveData);
+            }
             /**
              * コントローラー入力の取得
-             * @param callback コントローラー入力のハンドラ
+             * @param receiveData 受信データ
+             * @return ボタンアサイン
              */
-            void receiveProcessing(const std::uint8_t (&receiveData)[LowLayer::SBDBT_RECEIVE_SIZE], const std::function<void(const LowLayer::SBDBT::ButtonAssignment &bs)> &callback);
+            inline LowLayer::SBDBT::ButtonAssignment &receiveProcessing(const std::uint8_t receiveData[LowLayer::SBDBT_RECEIVE_SIZE]) {
+                if(_sbdbt.receiveCheck(receiveData)) _bs = _sbdbt.receiveProcessing();
+                return _bs;
+            }
+            /**
+             * スティックのデッドゾーンの取得
+             * @return スティックのデッドゾーン
+             */
+            inline std::int32_t *getDeadZones() {
+                return _deadZones;
+            }
+            /**
+             * スティックのデッドゾーンの設定
+             * @param deadZones スティックのデッドゾーン
+             */
+            inline void setDeadZones(const std::int32_t deadZones[4]) {
+                std::memcpy(_deadZones, deadZones, 4);
+            }
 
         private:
-            /// UART/USARTのペリフェラル
-            USART_TypeDef *_usart;
             /// SBDBTクラスのインスタンス
             LowLayer::SBDBT _sbdbt;
             /// ボタンアサイン
             LowLayer::SBDBT::ButtonAssignment _bs;
-
             /// スティックのデッドゾーン
-            static const std::map<EnumMotor, std::int8_t> DEAD_ZONES;
+            std::int32_t _deadZones[4];
 
             /**
              * スティック入力による角度の導出
@@ -112,7 +146,7 @@ namespace LibMecha {
              */
             static StickTheta sticksToTheta(float leftX, float leftY, float rightX, float rightY);
         };
-    }// namespace v2
-}// namespace LibMecha
+    } // namespace v2
+} // namespace LibMecha
 
-#endif// _LIBMECHA_CONTROLLER_HH_
+#endif // _LIBMECHA_CONTROLLER_HH_

@@ -21,7 +21,7 @@
 namespace LibMecha {
     inline namespace v2 {
         namespace LowLayer {
-            Can::Can(const CAN_HandleTypeDef &canHandle):
+            Can::Can(CAN_HandleTypeDef &canHandle):
                 _hcan(canHandle) {
             }
 

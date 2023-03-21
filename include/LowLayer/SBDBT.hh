@@ -17,6 +17,7 @@
 #define _LIBMECHA_SBDBT_HH_
 
 #include "LowLayer/SBDBT.h"
+#include "Peripheral.hh"
 #include "stm32f4xx_ll_usart.h"
 #include <array>
 #include <cstdint>
@@ -29,8 +30,10 @@ namespace LibMecha {
             constexpr const std::uint16_t SBDBT_RECEIVE_SIZE = C_SBDBT_RECEIVE_SIZE;
 
             /// SBDBT用低レイヤークラス
-            class SBDBT {
+            class SBDBT : public Peripheral {
             public:
+                using Peripheral::Peripheral;
+
                 /// ボタンの状態
                 enum class ButtonState {
                     /// 押された瞬間
@@ -93,9 +96,8 @@ namespace LibMecha {
 
                 /**
                  * コンストラクタ
-                 * @param usart UART/USARTペリフェラル
                  */
-                explicit SBDBT(USART_TypeDef *usart);
+                explicit SBDBT();
                 /**
                  * デストラクタ
                  */
@@ -104,7 +106,7 @@ namespace LibMecha {
                  * アナログスティックの状態の取得
                  * @return アナログスティックの状態
                  */
-                inline AnalogState getAnalogState() {
+                inline AnalogState getAnalogState() const {
                     return _as;
                 }
                 /**
@@ -120,7 +122,7 @@ namespace LibMecha {
                  * @param receiveData 受信データ
                  * @return 受信データが有効か
                  */
-                bool receiveCheck(const std::uint8_t (&receiveData)[SBDBT_RECEIVE_SIZE]);
+                bool receiveCheck(const std::uint8_t receiveData[SBDBT_RECEIVE_SIZE]);
                 /**
                  * 受信データのバリデーション
                  * @param receiveData 受信データ
@@ -131,7 +133,7 @@ namespace LibMecha {
                  * データを受信しボタン入力へ変換
                  * @return ボタン入力
                  */
-                ButtonAssignment receiveProcessing();
+                ButtonAssignment &receiveProcessing();
                 /**
                  * ボタンアサインの初期化
                  * @return ボタンアサイン
@@ -177,8 +179,6 @@ namespace LibMecha {
                 static constexpr const std::uint16_t kHighByte = 0xFF00;
                 /// 下位バイト
                 static constexpr const std::uint16_t kLowByte = 0x00FF;
-                /// UART/USARTペリフェラル
-                USART_TypeDef *_usart;
                 /// 前回取得時のボタンの状態
                 ButtonAssignment _lastButtonState;
                 /// アナログスティックの状態
@@ -194,8 +194,8 @@ namespace LibMecha {
                  */
                 static ButtonState identifyButtonState(ButtonState lastButtonState, bool isPush);
             };
-        }// namespace LowLayer
-    }// namespace v2
-}// namespace LibMecha
+        } // namespace LowLayer
+    } // namespace v2
+} // namespace LibMecha
 
-#endif// _LIBMECHA_SBDBT_HH_
+#endif // _LIBMECHA_SBDBT_HH_

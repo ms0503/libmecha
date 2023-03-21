@@ -25,8 +25,8 @@ namespace LibMecha {
     inline namespace v2 {
         /// モーター
         enum class EnumMotor : std::uint8_t {
-            FL,
             FR,
+            FL,
             RL,
             RR
         };
@@ -40,50 +40,13 @@ namespace LibMecha {
         /// モーター制御用クラス
         class Motor {
         public:
-            /// モーターアドレス
-            struct Address {
-                /// 左前方
-                std::uint8_t FL;
-                /// 右前方
-                std::uint8_t FR;
-                /// 左後方
-                std::uint8_t RL;
-                /// 右後方
-                std::uint8_t RR;
-            };
-
-            /// モーター信号
-            struct State {
-                /// 左前方
-                std::int32_t FL;
-                /// 右前方
-                std::int32_t FR;
-                /// 左後方
-                std::int32_t RL;
-                /// 右後方
-                std::int32_t RR;
-            };
-
             /**
              * コンストラクタ
              * @param canHandle HALのCANハンドル
+             * @param can Canクラスのインスタンス
+             * @param address CANアドレス
              */
-            explicit Motor(const CAN_HandleTypeDef &canHandle);
-            /**
-             * コンストラクタ
-             * @param canHandle HALのCANハンドル
-             * @param addresses モータードライバーのCANアドレス
-             */
-            explicit Motor(const CAN_HandleTypeDef &canHandle, Address addresses);
-            /**
-             * コンストラクタ
-             * @param canHandle HALのCANハンドル
-             * @param addrFL 左前方のモータードライバーのCANアドレス
-             * @param addrFR 右前方のモータードライバーのCANアドレス
-             * @param addrRL 左後方のモータードライバーのCANアドレス
-             * @param addrRR 右後方のモータードライバーのCANアドレス
-             */
-            explicit Motor(const CAN_HandleTypeDef &canHandle, std::uint8_t addrFL, std::uint8_t addrFR, std::uint8_t addrRL, std::uint8_t addrRR);
+            explicit Motor(CAN_HandleTypeDef &canHandle, LowLayer::Can &can, std::uint8_t address);
             /**
              * デストラクタ
              */
@@ -106,23 +69,23 @@ namespace LibMecha {
             void init(std::uint8_t canAddr, std::int32_t maxSpeed);
             /**
              * モーター信号の更新
-             * @param state モーター信号
+             * @param duty モーター信号
              */
-            void update(State state);
+            void update(std::int32_t duty);
 
         private:
             /// Canクラスのインスタンス
             LowLayer::Can _can;
             /// HALのCANハンドル
-            CAN_HandleTypeDef _hcan;
+            CAN_HandleTypeDef &_hcan;
             /// MotorDriverクラスのインスタンス
             LowLayer::MotorDriver _md;
             /// モータードライバーのCANアドレス
-            Address _addresses;
+            std::uint8_t _address;
             /// モーターの最高速度
             static std::int32_t _maxSpeed;
         };
-    }// namespace v2
-}// namespace LibMecha
+    } // namespace v2
+} // namespace LibMecha
 
-#endif// _LIBMECHA_MOTOR_HH_
+#endif // _LIBMECHA_MOTOR_HH_

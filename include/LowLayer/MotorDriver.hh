@@ -17,6 +17,7 @@
 #define _LIBMECHA_MOTORDRIVER_HH_
 
 #include "Can.hh"
+#include "Peripheral.hh"
 #include "stm32f4xx_hal.h"
 #include <array>
 #include <cassert>
@@ -26,8 +27,10 @@ namespace LibMecha {
     inline namespace v2 {
         namespace LowLayer {
             /// メカトロ製モータードライバー用低レイヤークラス
-            class MotorDriver {
+            class MotorDriver : public Peripheral {
             public:
+                using Peripheral::Peripheral;
+
                 /// モータドライバーのコマンド
                 enum class DriveCommand : std::uint8_t {
                     /// Duty比の設定
@@ -50,10 +53,10 @@ namespace LibMecha {
 
                 /**
                  * コンストラクタ
-                 * @param canHandle HALのCANハンドル
                  * @param can Canクラスのインスタンス
+                 * @param address CANアドレス
                  */
-                explicit MotorDriver(const CAN_HandleTypeDef &canHandle, const Can &can);
+                explicit MotorDriver(Can &can, std::uint8_t address);
                 /**
                  * デストラクタ
                  */
@@ -64,14 +67,13 @@ namespace LibMecha {
                 void init();
                 /**
                  * PID制御の初期化
-                 * @param address モータードライバーのCANアドレス
                  * @param kp Kp値
                  * @param ki Ki値
                  * @param kd Kd値
                  * @param maxRpm 上限回転数
                  * @param kppm 不明
                  */
-                void pidInit(std::uint8_t address, float kp, float ki, float kd, std::uint32_t maxRpm, std::uint32_t kppm);
+                void pidInit(float kp, float ki, float kd, std::uint32_t maxRpm, std::uint32_t kppm);
                 /**
                  * Canクラスのインスタンスの取得
                  * @return Canクラスのインスタンス
@@ -80,74 +82,61 @@ namespace LibMecha {
                     return _can;
                 }
                 /**
-                 * HALのCANハンドルの取得
-                 * @return HALのCANハンドル
-                 */
-                inline CAN_HandleTypeDef &getCanHandle() {
-                    return _hcan;
-                }
-                /**
                  * ターゲット回転数の設定
-                 * @param address モータードライバーのCANアドレス
                  * @param targetRpm ターゲット回転数
                  * @return 設定完了
                  */
-                bool setTargetRPM(std::uint8_t address, std::int32_t targetRpm);
+                bool setTargetRPM(std::int32_t targetRpm);
                 /**
                  * Duty比の設定
-                 * @param address モータードライバーのCANアドレス
                  * @param duty Duty比
                  * @return 設定完了
                  */
-                bool setDuty(std::uint8_t address, std::int32_t duty);
+                bool setDuty(std::int32_t duty);
                 /**
                  * パラメータの設定
-                 * @param address モータードライバーのCANアドレス
                  * @param mode コマンド
                  * @param fparamValue 値
                  * @return 設定完了
                  */
-                inline bool setParameter(std::uint8_t address, DriveCommand cmd, float fparamValue) {
+                inline bool setParameter(DriveCommand cmd, float fparamValue) {
                     union {
                         float _fparamValue;
                         std::uint32_t uparamValue;
                     };
                     _fparamValue = fparamValue;
 
-                    return setParameter(address, cmd, uparamValue);
+                    return setParameter(cmd, uparamValue);
                 }
                 /**
                  * パラメータの設定
-                 * @param address モータードライバーのCANアドレス
                  * @param mode コマンド
                  * @param uparamValue 値
                  * @return 設定完了
                  */
-                bool setParameter(std::uint8_t address, DriveCommand cmd, std::uint32_t uparamValue);
+                bool setParameter(DriveCommand cmd, std::uint32_t uparamValue);
                 /**
                  * 非常停止信号の送信
-                 * @param address モータードライバーのCANアドレス
                  * @return 送信完了
                  */
-                bool emergency(std::uint8_t address);
+                bool emergency();
 
             private:
-                /// HALのCANハンドル
-                CAN_HandleTypeDef _hcan;
                 /// Canクラスのインスタンス
-                Can _can;
+                Can &_can;
+                /// CANアドレス
+                std::uint8_t _address;
 
                 /**
                  * MD1枚のみのアップデート
-                 * @param address モータードライバーのCANアドレス
                  * @param cmd コマンド
                  * @param sendData
                  * @return
                  */
-                bool updateDataSend(std::uint8_t address, DriveCommand cmd, const std::uint8_t sendData[4]);
+                bool updateDataSend(DriveCommand cmd, const std::uint8_t sendData[4]);
             };
-        }// namespace LowLayer
-    }// namespace v2
-}// namespace LibMecha
+        } // namespace LowLayer
+    } // namespace v2
+} // namespace LibMecha
 
-#endif// _LIBMECHA_MOTORDRIVER_HH_
+#endif // _LIBMECHA_MOTORDRIVER_HH_

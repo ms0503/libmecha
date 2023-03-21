@@ -16,6 +16,7 @@
 #ifndef _LIBMECHA_CAN_HH_
 #define _LIBMECHA_CAN_HH_
 
+#include "Peripheral.hh"
 #include "stm32f4xx_hal.h"
 #include <array>
 #include <cstdint>
@@ -25,13 +26,15 @@ namespace LibMecha {
     inline namespace v2 {
         namespace LowLayer {
             /// CAN通信用低レイヤークラス
-            class Can {
+            class Can : public Peripheral {
             public:
+                using Peripheral::Peripheral;
+
                 /**
                  * コンストラクタ
                  * @param canHandle HALのCANハンドル
                  */
-                explicit Can(const CAN_HandleTypeDef &canHandle);
+                explicit Can(CAN_HandleTypeDef &canHandle);
                 /**
                  * デストラクタ
                  */
@@ -79,12 +82,12 @@ namespace LibMecha {
 
             private:
                 /// HALのCANハンドル
-                CAN_HandleTypeDef _hcan {};
+                CAN_HandleTypeDef &_hcan;
                 /// 受信割り込み
                 std::uint32_t _receiveInterrupt = CAN_IT_RX_FIFO0_MSG_PENDING;
             };
-        }// namespace LowLayer
-    }// namespace v2
-}// namespace LibMecha
+        } // namespace LowLayer
+    } // namespace v2
+} // namespace LibMecha
 
-#endif// _LIBMECHA_CAN_HH_
+#endif // _LIBMECHA_CAN_HH_

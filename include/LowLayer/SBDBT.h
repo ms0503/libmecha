@@ -29,4 +29,4 @@ extern "C" {
 }
 #endif
 
-#endif// _LIBMECHA_SBDBT_H_
+#endif // _LIBMECHA_SBDBT_H_
