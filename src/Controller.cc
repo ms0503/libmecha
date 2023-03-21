@@ -30,24 +30,20 @@ namespace LibMecha {
             const LowLayer::SBDBT::AnalogState as = getStick();
             const float LX = as.LX;
             const float LY = as.LY;
+            const float RX = as.RX;
+            const float RY = as.RY;
             // 極座標
             const float r = std::hypot(LX, LY) / STICK_MAX; // 動径
-            const float theta = std::atan2(LY, LX); // 偏角(右0、反時計回りが正、-π < theta <= π)
-            const auto maxSpeed = static_cast<float>(Motor::getMaxSpeed());
-            const auto piDiv4 = static_cast<float>(M_PI_4);
-            const float FR = -std::sin(theta - piDiv4) * r * maxSpeed;
-            const float FL = std::sin(theta + piDiv4) * r * maxSpeed;
-            const float RL = -std::sin(theta - piDiv4) * r * maxSpeed;
-            const float RR = std::sin(theta + piDiv4) * r * maxSpeed;
+            const StickTheta theta = sticksToTheta(LX, LY, RX, RY); // 偏角(右0、反時計回りが正、-π < theta <= π)
             switch(index) {
                 case 0:
-                    return static_cast<std::int32_t>(FR);
+                    return static_cast<std::int32_t>(-std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
                 case 1:
-                    return static_cast<std::int32_t>(FL);
+                    return static_cast<std::int32_t>(std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
                 case 2:
-                    return static_cast<std::int32_t>(RL);
+                    return static_cast<std::int32_t>(-std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
                 case 3:
-                    return static_cast<std::int32_t>(RR);
+                    return static_cast<std::int32_t>(std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
                 default:
                     break;
             }
@@ -55,7 +51,7 @@ namespace LibMecha {
         }
 
         float Controller::stickToTheta(const float x, const float y) {
-            return std::atan(y / x);
+            return std::atan2(y, x);
         }
 
         Controller::StickTheta Controller::sticksToTheta(const float leftX, const float leftY, const float rightX, const float rightY) {
