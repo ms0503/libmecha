@@ -14,6 +14,7 @@
  */
 
 #include "LowLayer/SBDBT.hh"
+#include "Utils.hh"
 #include <numeric>
 
 namespace LibMecha {
@@ -24,12 +25,13 @@ namespace LibMecha {
             }
             SBDBT::~SBDBT() = default;
 
-            bool SBDBT::receiveCheck(const std::uint8_t receiveData[SBDBT_RECEIVE_SIZE]) {
+            bool SBDBT::receiveCheck(const std::uint8_t (&receiveData)[SBDBT_RECEIVE_SIZE]) {
                 std::array<std::uint8_t, SBDBT_RECEIVE_SIZE> processedReceiveData {};
                 std::uint8_t b;
                 std::uint8_t checksum;
-
-                for(std::uint8_t i = 0; i < sizeof(receiveData); i++) {
+                std::uint8_t sizedReceiveData[SBDBT_RECEIVE_SIZE];
+                std::copy(receiveData, receiveData + SBDBT_RECEIVE_SIZE - 1, sizedReceiveData);
+                for(std::uint8_t i = 0; i < Utils::getArrayLength(sizedReceiveData); i++) {
                     if(receiveData[i] == kStartByte) {
                         b = i;
                         for(std::uint8_t &a : processedReceiveData) {
@@ -57,7 +59,7 @@ namespace LibMecha {
                 std::uint8_t b;
                 std::uint8_t checksum;
 
-                for(std::uint8_t i = 0; i < sizeof(receiveData); i++) {
+                for(std::uint8_t i = 0; i < receiveData.size(); i++) {
                     if(receiveData.at(i) == kStartByte) {
                         b = i;
                         for(std::uint8_t &a : processedReceiveData) {
@@ -80,7 +82,7 @@ namespace LibMecha {
                 return false;
             }
 
-            SBDBT::ButtonAssignment &SBDBT::receiveProcessing() {
+            SBDBT::ButtonAssignment SBDBT::receiveProcessing() {
                 ButtonAssignment button {};
                 std::uint16_t receiveData;
                 _as = {
@@ -89,7 +91,7 @@ namespace LibMecha {
                     .LX = static_cast<std::int8_t>(_processedReceiveData.at(3) - 0b0100'0000),
                     .LY = static_cast<std::int8_t>(_processedReceiveData.at(4) - 0b0100'0000)
                 };
-                std::memcpy(&receiveData, &_processedReceiveData.at(1), 2);
+                receiveData = (_processedReceiveData.at(1) << 8) + _processedReceiveData.at(2);
                 button.Up = identifyButtonState(_lastButtonState.Up, (receiveData & kButtonUp) != 0);
                 button.Down = identifyButtonState(_lastButtonState.Down, (receiveData & kButtonDown) != 0);
                 button.Right = identifyButtonState(_lastButtonState.Right, (receiveData & kButtonRight) != 0);

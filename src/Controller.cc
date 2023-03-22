@@ -16,7 +16,6 @@
 #include "Controller.hh"
 #include "Motor.hh"
 #include <cmath>
-#include <map>
 
 namespace LibMecha {
     inline namespace v2 {
@@ -35,10 +34,10 @@ namespace LibMecha {
             // 極座標
             const float r = std::hypot(LX, LY) / STICK_MAX; // 動径
             const StickTheta theta = sticksToTheta(LX, LY, RX, RY); // 偏角(右0、反時計回りが正、-π < theta <= π)
-            if(index == 0) return static_cast<std::int32_t>(-std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
-            if(index == 1) return static_cast<std::int32_t>(std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
-            if(index == 2) return static_cast<std::int32_t>(-std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
-            if(index == 3) return static_cast<std::int32_t>(std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
+            if(index == 0) return static_cast<std::int32_t>(std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
+            if(index == 1) return static_cast<std::int32_t>(-std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
+            if(index == 2) return static_cast<std::int32_t>(-std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
+            if(index == 3) return static_cast<std::int32_t>(std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
             return 0;
         }
 

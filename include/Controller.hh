@@ -95,7 +95,9 @@ namespace LibMecha {
                 return button == LowLayer::SBDBT::ButtonState::kReleaseEdge;
             }
             inline bool receiveCheck(const std::uint8_t receiveData[LowLayer::SBDBT_RECEIVE_SIZE]) {
-                return _sbdbt.receiveCheck(receiveData);
+                std::uint8_t sizedReceiveData[LowLayer::SBDBT_RECEIVE_SIZE];
+                std::copy(receiveData, receiveData + LowLayer::SBDBT_RECEIVE_SIZE, sizedReceiveData);
+                return _sbdbt.receiveCheck(sizedReceiveData);
             }
             /**
              * コントローラー入力の取得
@@ -103,7 +105,10 @@ namespace LibMecha {
              * @return ボタンアサイン
              */
             inline LowLayer::SBDBT::ButtonAssignment &receiveProcessing(const std::uint8_t receiveData[LowLayer::SBDBT_RECEIVE_SIZE]) {
-                if(_sbdbt.receiveCheck(receiveData)) _bs = _sbdbt.receiveProcessing();
+                std::uint8_t sizedReceiveData[LowLayer::SBDBT_RECEIVE_SIZE];
+                std::copy(receiveData, receiveData + LowLayer::SBDBT_RECEIVE_SIZE, sizedReceiveData);
+                if(_sbdbt.receiveCheck(sizedReceiveData)) _bs = _sbdbt.receiveProcessing();
+
                 return _bs;
             }
             /**

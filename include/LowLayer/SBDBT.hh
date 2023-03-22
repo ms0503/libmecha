@@ -122,7 +122,7 @@ namespace LibMecha {
                  * @param receiveData 受信データ
                  * @return 受信データが有効か
                  */
-                bool receiveCheck(const std::uint8_t receiveData[SBDBT_RECEIVE_SIZE]);
+                bool receiveCheck(const std::uint8_t (&receiveData)[SBDBT_RECEIVE_SIZE]);
                 /**
                  * 受信データのバリデーション
                  * @param receiveData 受信データ
@@ -133,7 +133,7 @@ namespace LibMecha {
                  * データを受信しボタン入力へ変換
                  * @return ボタン入力
                  */
-                ButtonAssignment &receiveProcessing();
+                ButtonAssignment receiveProcessing();
                 /**
                  * ボタンアサインの初期化
                  * @return ボタンアサイン
