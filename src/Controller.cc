@@ -15,41 +15,27 @@
 
 #include "Controller.hh"
 #include "Motor.hh"
-#include <cmath>
 
 namespace LibMecha {
-    inline namespace v2 {
-        Controller::Controller():
-            _sbdbt(), _bs(), _deadZones() {
-        }
+    Controller::Controller():
+        _sbdbt(), _bs(), _deadZones() {
+    }
 
-        Controller::~Controller() = default;
+    Controller::~Controller() = default;
 
-        std::int32_t Controller::stickToMotor(const std::uint8_t index) {
-            const LowLayer::SBDBT::AnalogState as = getStick();
-            const float LX = as.LX;
-            const float LY = as.LY;
-            const float RX = as.RX;
-            const float RY = as.RY;
-            // 極座標
-            const float r = std::hypot(LX, LY) / STICK_MAX; // 動径
-            const StickTheta theta = sticksToTheta(LX, LY, RX, RY); // 偏角(右0、反時計回りが正、-π < theta <= π)
-            if(index == 0) return static_cast<std::int32_t>(std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
-            if(index == 1) return static_cast<std::int32_t>(-std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
-            if(index == 2) return static_cast<std::int32_t>(-std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
-            if(index == 3) return static_cast<std::int32_t>(std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
-            return 0;
-        }
-
-        float Controller::stickToTheta(const float x, const float y) {
-            return std::atan2(y, x);
-        }
-
-        Controller::StickTheta Controller::sticksToTheta(const float leftX, const float leftY, const float rightX, const float rightY) {
-            return {
-                .left = stickToTheta(leftX, leftY),
-                .right = stickToTheta(rightX, rightY)
-            };
-        }
-    } // namespace v2
+    std::int32_t Controller::stickToMotor(const std::uint8_t index) const {
+        const LowLayer::SBDBT::AnalogState as = getStick();
+        const float LX = _deadZones.at(0) < std::abs(as.LX) ? static_cast<float>(as.LX) : 0;
+        const float LY = _deadZones.at(1) < std::abs(as.LY) ? static_cast<float>(as.LY) : 0;
+        const float RX = _deadZones.at(2) < std::abs(as.RX) ? static_cast<float>(as.RX) : 0;
+        const float RY = _deadZones.at(3) < std::abs(as.RY) ? static_cast<float>(as.RY) : 0;
+        // 極座標
+        const float r = std::hypot(LX, LY) / STICK_MAX; // 動径
+        const StickTheta theta = sticksToTheta(LX, LY, RX, RY); // 偏角(右0・反時計回り・rad・-π < x <= π)
+        if(index == 0) return static_cast<std::int32_t>(std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
+        if(index == 1) return static_cast<std::int32_t>(-std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
+        if(index == 2) return static_cast<std::int32_t>(-std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
+        if(index == 3) return static_cast<std::int32_t>(std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
+        return 0;
+    }
 } // namespace LibMecha

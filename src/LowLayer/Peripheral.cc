@@ -15,11 +15,7 @@
 
 #include "LowLayer/Peripheral.hh"
 
-namespace LibMecha {
-    inline namespace v2 {
-        namespace LowLayer {
-            Peripheral::Peripheral() = default;
-            Peripheral::~Peripheral() = default;
-        }
-    }
-}
+namespace LibMecha::LowLayer {
+    Peripheral::Peripheral() = default;
+    Peripheral::~Peripheral() = default;
+} // namespace LibMecha::LowLayer

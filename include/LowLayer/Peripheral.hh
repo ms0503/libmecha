@@ -16,16 +16,19 @@
 #ifndef MAIN_PERIPHERAL_HH
 #define MAIN_PERIPHERAL_HH
 
-namespace LibMecha {
-    inline namespace v2 {
-        namespace LowLayer {
-            class Peripheral {
-            public:
-                explicit Peripheral();
-                virtual ~Peripheral();
-            };
-        }
-    }
-}
+namespace LibMecha::LowLayer {
+    /// ペリフェラル識別用ベースクラス
+    class Peripheral {
+    public:
+        /**
+         * コンストラクタ
+         */
+        explicit Peripheral();
+        /**
+         * デストラクタ
+         */
+        virtual ~Peripheral();
+    };
+} // namespace LibMecha::LowLayer
 
 #endif // MAIN_PERIPHERAL_HH

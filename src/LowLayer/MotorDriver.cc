@@ -15,87 +15,77 @@
 
 #include "LowLayer/MotorDriver.hh"
 
-namespace LibMecha {
-    inline namespace v2 {
-        namespace LowLayer {
-            MotorDriver::MotorDriver(Can &can, std::uint8_t address):
-                _can(can), _address(address) {
-            }
+namespace LibMecha::LowLayer {
+    MotorDriver::MotorDriver(Can &can, std::uint8_t address):
+        _can(can), _address(address) {
+    }
 
-            MotorDriver::~MotorDriver() = default;
+    void MotorDriver::init() const {
+    }
 
-            void MotorDriver::init() {
-            }
+    void MotorDriver::pidInit(const float kp, const float ki, const float kd, const std::uint32_t maxRpm, const std::uint32_t kppm) const {
+        while(!setParameter(DriveCommand::kSetParamP, kp))
+            ;
+        HAL_Delay(20);
+        while(!setParameter(DriveCommand::kSetParamI, ki))
+            ;
+        HAL_Delay(20);
+        while(!setParameter(DriveCommand::kSetParamD, kd))
+            ;
+        HAL_Delay(20);
+        while(!setParameter(DriveCommand::kSetParamLIMIT, maxRpm))
+            ;
+        HAL_Delay(20);
+        while(!setParameter(DriveCommand::kSetParamPPM, kppm))
+            ;
+        HAL_Delay(20);
+    }
 
-            void MotorDriver::pidInit(const float kp, const float ki, const float kd, const std::uint32_t maxRpm, const std::uint32_t kppm) {
-                while(!setParameter(DriveCommand::kSetParamP, kp))
-                    ;
-                HAL_Delay(20);
-                while(!setParameter(DriveCommand::kSetParamI, ki))
-                    ;
-                HAL_Delay(20);
-                while(!setParameter(DriveCommand::kSetParamD, kd))
-                    ;
-                HAL_Delay(20);
-                while(!setParameter(DriveCommand::kSetParamLIMIT, maxRpm))
-                    ;
-                HAL_Delay(20);
-                while(!setParameter(DriveCommand::kSetParamPPM, kppm))
-                    ;
-                HAL_Delay(20);
-            }
+    bool MotorDriver::setTargetRPM(const std::int32_t targetRpm) const {
+        const std::uint8_t sendDataArray[4] {
+            static_cast<std::uint8_t>(targetRpm >> 24),
+            static_cast<std::uint8_t>(targetRpm >> 16),
+            static_cast<std::uint8_t>(targetRpm >> 8),
+            static_cast<std::uint8_t>(targetRpm)
+        };
 
-            bool MotorDriver::setTargetRPM(const std::int32_t targetRpm) {
-                const std::uint8_t sendDataArray[4] {
-                    static_cast<std::uint8_t>(targetRpm >> 24),
-                    static_cast<std::uint8_t>(targetRpm >> 16),
-                    static_cast<std::uint8_t>(targetRpm >> 8),
-                    static_cast<std::uint8_t>(targetRpm)
-                };
+        return updateDataSend(DriveCommand::kPID, sendDataArray);
+    }
 
-                return updateDataSend(DriveCommand::kPID, sendDataArray);
-            }
+    bool MotorDriver::setDuty(const std::int32_t duty) const {
+        const std::uint8_t sendDataArray[4] {
+            static_cast<std::uint8_t>(duty >> 24),
+            static_cast<std::uint8_t>(duty >> 16),
+            static_cast<std::uint8_t>(duty >> 8),
+            static_cast<std::uint8_t>(duty)
+        };
 
-            bool MotorDriver::setDuty(const std::int32_t duty) {
-                const std::uint8_t sendDataArray[4] {
-                    static_cast<std::uint8_t>(duty >> 24),
-                    static_cast<std::uint8_t>(duty >> 16),
-                    static_cast<std::uint8_t>(duty >> 8),
-                    static_cast<std::uint8_t>(duty)
-                };
+        return updateDataSend(DriveCommand::kDuty, sendDataArray);
+    }
 
-                return updateDataSend(DriveCommand::kDuty, sendDataArray);
-            }
+    bool MotorDriver::setParameter(const DriveCommand mode, const std::uint32_t uparamValue) const {
+        if((mode == DriveCommand::kPID) || (mode == DriveCommand::kDuty) || (mode == DriveCommand::kEmergency)) return false;
+        const std::uint8_t sendDataArray[4] {
+            static_cast<std::uint8_t>(uparamValue >> 24),
+            static_cast<std::uint8_t>(uparamValue >> 16),
+            static_cast<std::uint8_t>(uparamValue >> 8),
+            static_cast<std::uint8_t>(uparamValue)
+        };
 
-            bool MotorDriver::setParameter(const DriveCommand mode, const std::uint32_t uparamValue) {
-                if((mode == DriveCommand::kPID) || (mode == DriveCommand::kDuty) || (mode == DriveCommand::kEmergency)) return false;
-                const std::uint8_t sendDataArray[4] {
-                    static_cast<std::uint8_t>(uparamValue >> 24),
-                    static_cast<std::uint8_t>(uparamValue >> 16),
-                    static_cast<std::uint8_t>(uparamValue >> 8),
-                    static_cast<std::uint8_t>(uparamValue)
-                };
+        return updateDataSend(mode, sendDataArray);
+    }
 
-                return updateDataSend(mode, sendDataArray);
-            }
+    bool MotorDriver::emergency() const {
+        const std::uint8_t sendDataArray[4] {};
 
-            bool MotorDriver::emergency() {
-                const std::uint8_t sendDataArray[4] {};
+        return updateDataSend(DriveCommand::kEmergency, sendDataArray);
+    }
 
-                return updateDataSend(DriveCommand::kEmergency, sendDataArray);
-            }
+    bool MotorDriver::updateDataSend(const DriveCommand cmd, const std::array<std::uint8_t, 4> sendData) const {
+        std::array<std::uint8_t, 4 + 1> sendDataArray {};
+        sendDataArray.at(0) = static_cast<std::uint8_t>(cmd);
+        std::copy(sendData.begin(), sendData.end(), sendDataArray.begin() + 1);
 
-            bool MotorDriver::updateDataSend(const DriveCommand cmd, const std::uint8_t sendData[4]) {
-                std::array<std::uint8_t, 4 + 1> sendDataArray {
-                    static_cast<std::uint8_t>(cmd),
-                    sendData[0],
-                    sendData[1],
-                    sendData[2],
-                    sendData[3]
-                };
-
-                return _can.send(_address, sendDataArray.data(), 4 + 1);
-            }
-        }// namespace LowLayer
-    }// namespace v2
-}// namespace LibMecha
+        return _can.send(_address, sendDataArray);
+    }
+} // namespace LibMecha::LowLayer

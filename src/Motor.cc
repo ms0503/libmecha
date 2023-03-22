@@ -16,32 +16,18 @@
 #include "Motor.hh"
 
 namespace LibMecha {
-    inline namespace v2 {
-        std::int32_t Motor::_maxSpeed = 0;
+    std::int32_t Motor::_maxSpeed = 0;
 
-        Motor::Motor(CAN_HandleTypeDef &canHandle, LowLayer::Can &can, std::uint8_t address):
-            _hcan(canHandle), _can(can), _address(address), _md(can, address) {
-        }
+    Motor::Motor(CAN_HandleTypeDef &canHandle, LowLayer::Can &can, std::uint8_t address):
+        _hcan(canHandle), _can(can), _address(address), _md(can, address) {
+    }
 
-        Motor::~Motor() = default;
+    Motor::~Motor() = default;
 
-        std::int32_t Motor::getMaxSpeed() {
-            return _maxSpeed;
-        }
-
-        void Motor::setMaxSpeed(const std::int32_t maxSpeed) {
-            _maxSpeed = maxSpeed;
-        }
-
-        void Motor::init(const std::uint8_t canAddr, const std::int32_t maxSpeed) {
-            _can.init(canAddr, CAN_IT_RX_FIFO1_MSG_PENDING);
-            HAL_CAN_ActivateNotification(&_hcan, CAN_IT_RX_FIFO0_MSG_PENDING);
-            _md.init();
-            setMaxSpeed(maxSpeed);
-        }
-
-        void Motor::update(const std::int32_t duty) {
-            _md.setDuty(duty);
-        }
-    } // namespace v2
+    void Motor::init(const std::uint8_t canAddr, const std::int32_t maxSpeed) {
+        _can.init(canAddr, CAN_IT_RX_FIFO1_MSG_PENDING);
+        HAL_CAN_ActivateNotification(&_hcan, CAN_IT_RX_FIFO0_MSG_PENDING);
+        _md.init();
+        setMaxSpeed(maxSpeed);
+    }
 } // namespace LibMecha

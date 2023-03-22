@@ -14,95 +14,91 @@
  */
 
 #include "LowLayer/Can.hh"
+#include "Utils.hh"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"
 
-namespace LibMecha {
-    inline namespace v2 {
-        namespace LowLayer {
-            Can::Can(CAN_HandleTypeDef &canHandle):
-                _hcan(canHandle) {
+namespace LibMecha::LowLayer {
+    Can::Can(CAN_HandleTypeDef &canHandle):
+        _hcan(canHandle) {
+    }
+
+    void Can::setFilter(const std::uint8_t address) const {
+        CAN_FilterTypeDef canFilter;
+        canFilter.FilterBank = 0;
+        canFilter.FilterMode = CAN_FILTERMODE_IDMASK;
+        canFilter.FilterScale = CAN_FILTERSCALE_32BIT;
+        canFilter.FilterMaskIdHigh = 0xFFE0;
+        canFilter.FilterMaskIdLow = 0x0000;
+        canFilter.FilterIdHigh = static_cast<std::uint16_t>(address) << 5;
+        canFilter.FilterIdLow = 0x0000;
+        canFilter.FilterFIFOAssignment = CAN_FILTER_FIFO1;
+        canFilter.FilterActivation = ENABLE;
+        canFilter.SlaveStartFilterBank = 14;
+
+        HAL_CAN_ConfigFilter(&_hcan, &canFilter);
+    }
+
+    void Can::sendRemote(const std::uint8_t address) const {
+        CAN_TxHeaderTypeDef canTxHeader;
+        std::uint32_t mailBox;
+        std::array<std::uint8_t, 1> data {};
+        canTxHeader.StdId = address;
+        canTxHeader.DLC = 1;
+        canTxHeader.ExtId = 0x00;
+        canTxHeader.RTR = CAN_RTR_REMOTE;
+        canTxHeader.IDE = CAN_ID_STD;
+        canTxHeader.TransmitGlobalTime = DISABLE;
+
+        if(HAL_CAN_AddTxMessage(&_hcan, &canTxHeader, data.data(), &mailBox) != HAL_OK) {
+            HAL_CAN_AbortTxRequest(&_hcan, mailBox);
+            if(HAL_CAN_AddTxMessage(&_hcan, &canTxHeader, data.data(), &mailBox) != HAL_OK) {
+                //Error_Handler();
             }
+        }
+    }
 
-            Can::~Can() = default;
+    template<std::size_t SIZE>
+    bool Can::send(const std::uint8_t address, const std::array<std::uint8_t, SIZE> sendData) const {
+        if(SIZE == 0) return false;
+        CAN_TxHeaderTypeDef canTxHeader;
+        std::uint32_t mailBox;
+        canTxHeader.StdId = address;
+        canTxHeader.DLC = SIZE;
+        canTxHeader.ExtId = 0x00;
+        canTxHeader.RTR = CAN_RTR_DATA;
+        canTxHeader.IDE = CAN_ID_STD;
+        canTxHeader.TransmitGlobalTime = DISABLE;
 
-            void Can::setFilter(const std::uint8_t address) {
-                CAN_FilterTypeDef canFilter;
-                canFilter.FilterBank = 0;
-                canFilter.FilterMode = CAN_FILTERMODE_IDMASK;
-                canFilter.FilterScale = CAN_FILTERSCALE_32BIT;
-                canFilter.FilterMaskIdHigh = 0xFFE0;
-                canFilter.FilterMaskIdLow = 0x0000;
-                canFilter.FilterIdHigh = static_cast<std::uint16_t>(address) << 5;
-                canFilter.FilterIdLow = 0x0000;
-                canFilter.FilterFIFOAssignment = CAN_FILTER_FIFO1;
-                canFilter.FilterActivation = ENABLE;
-                canFilter.SlaveStartFilterBank = 14;
-
-                HAL_CAN_ConfigFilter(&_hcan, &canFilter);
+        while(!HAL_CAN_GetTxMailboxesFreeLevel(&_hcan))
+            ;
+        if(HAL_CAN_AddTxMessage(&_hcan, &canTxHeader, sendData, &mailBox) != HAL_OK) {
+            HAL_CAN_AbortTxRequest(&_hcan, mailBox);
+            if(HAL_CAN_AddTxMessage(&_hcan, &canTxHeader, sendData, &mailBox) != HAL_OK) {
+                //Error_Handler();
+                return false;
             }
+        }
 
-            void Can::sendRemote(const std::uint8_t address) {
-                CAN_TxHeaderTypeDef canTxHeader;
-                std::uint32_t mailBox;
-                std::array<std::uint8_t, 1> data {};
-                canTxHeader.StdId = address;
-                canTxHeader.DLC = 1;
-                canTxHeader.ExtId = 0x00;
-                canTxHeader.RTR = CAN_RTR_REMOTE;
-                canTxHeader.IDE = CAN_ID_STD;
-                canTxHeader.TransmitGlobalTime = DISABLE;
+        return true;
+    }
 
-                if(HAL_CAN_AddTxMessage(&_hcan, &canTxHeader, data.data(), &mailBox) != HAL_OK) {
-                    HAL_CAN_AbortTxRequest(&_hcan, mailBox);
-                    if(HAL_CAN_AddTxMessage(&_hcan, &canTxHeader, data.data(), &mailBox) != HAL_OK) {
-                        //Error_Handler();
-                    }
-                }
-            }
+    void Can::init(const std::uint8_t address, const std::uint32_t receiveInterrupt) {
+        _receiveInterrupt = receiveInterrupt;
+        setFilter(address);
+        HAL_CAN_ActivateNotification(&_hcan, _receiveInterrupt);
+        HAL_CAN_Start(&_hcan);
+    }
 
-            bool Can::send(const std::uint8_t address, std::uint8_t *const sendData, const std::size_t sendDataSize) {
-                if(sendDataSize == 0) return false;
-                CAN_TxHeaderTypeDef canTxHeader;
-                std::uint32_t mailBox;
-                canTxHeader.StdId = address;
-                canTxHeader.DLC = sendDataSize;
-                canTxHeader.ExtId = 0x00;
-                canTxHeader.RTR = CAN_RTR_DATA;
-                canTxHeader.IDE = CAN_ID_STD;
-                canTxHeader.TransmitGlobalTime = DISABLE;
+    std::array<std::uint8_t, 8> Can::getMessage(const std::uint8_t canRxFifo) const {
+        std::array<std::uint8_t, 8> result {};
+        CAN_RxHeaderTypeDef rxHeader;
 
-                while(!HAL_CAN_GetTxMailboxesFreeLevel(&_hcan))
-                    ;
-                if(HAL_CAN_AddTxMessage(&_hcan, &canTxHeader, sendData, &mailBox) != HAL_OK) {
-                    HAL_CAN_AbortTxRequest(&_hcan, mailBox);
-                    if(HAL_CAN_AddTxMessage(&_hcan, &canTxHeader, sendData, &mailBox) != HAL_OK) {
-                        //Error_Handler();
-                        return false;
-                    }
-                }
+        HAL_CAN_GetRxMessage(&_hcan, canRxFifo, &rxHeader, result.data());
 
-                return true;
-            }
-
-            void Can::init(const std::uint8_t address, const std::uint32_t receiveInterrupt) {
-                _receiveInterrupt = receiveInterrupt;
-                setFilter(address);
-                HAL_CAN_ActivateNotification(&_hcan, _receiveInterrupt);
-                HAL_CAN_Start(&_hcan);
-            }
-
-            std::array<std::uint8_t, 8> Can::getMessage(const std::uint8_t canRxFifo) {
-                std::array<std::uint8_t, 8> result {};
-                CAN_RxHeaderTypeDef rxHeader;
-
-                HAL_CAN_GetRxMessage(&_hcan, canRxFifo, &rxHeader, result.data());
-
-                return result;
-            }
-        }// namespace LowLayer
-    }// namespace v2
-}// namespace LibMecha
+        return result;
+    }
+} // namespace LibMecha::LowLayer
 
 #pragma clang diagnostic pop

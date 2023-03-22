@@ -23,7 +23,7 @@ extern "C" {
 #include <stdint.h>
 
 /// SBDBTのデータサイズ
-#define C_SBDBT_RECEIVE_SIZE ((unsigned short)8)
+#define C_SBDBT_RECEIVE_SIZE ((uint16_t)8)
 
 #ifdef __cplusplus
 }

@@ -16,8 +16,6 @@
 #include "Utils.hh"
 
 namespace LibMecha {
-    inline namespace v2 {
-        namespace Utils {
-        }
-    }
-}
+    Utils::Utils() = default;
+    Utils::~Utils() = default;
+} // namespace LibMecha

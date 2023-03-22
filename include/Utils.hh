@@ -19,13 +19,28 @@
 #include <cstdlib>
 
 namespace LibMecha {
-    inline namespace v2 {
-        namespace Utils {
-            template<typename TYPE, std::size_t SIZE> inline std::size_t getArrayLength(const TYPE (&)[SIZE]) {
-                return SIZE;
-            }
+    /// ユーティリティクラス
+    class Utils {
+    public:
+        /**
+         * コンストラクタ
+         */
+        explicit Utils();
+        /**
+         * デストラクタ
+         */
+        ~Utils();
+        /**
+         * 配列の要素数の取得
+         * @tparam TYPE 要素の型
+         * @tparam SIZE 配列の要素数
+         * @return 配列の要素数(SIZEの値)
+         */
+        template<typename TYPE, std::size_t SIZE>
+        static inline std::size_t getArrayLength(const TYPE (&)[SIZE]) {
+            return SIZE;
         }
-    }
-}
+    };
+} // namespace LibMecha
 
-#endif// _LIBMECHA_UTILS_HH_
+#endif // _LIBMECHA_UTILS_HH_

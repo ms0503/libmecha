@@ -22,70 +22,68 @@
 #include <string>
 
 namespace LibMecha {
-    inline namespace v2 {
-        /// モーター
-        enum class EnumMotor : std::uint8_t {
-            FR,
-            FL,
-            RL,
-            RR
-        };
+    /// モーター
+    enum class EnumMotor : std::uint8_t {
+        FR,
+        FL,
+        RL,
+        RR
+    };
 
-        /// モーターの回転方向
-        enum class EnumMotorRotate : std::int8_t {
-            LEFT = -1,
-            RIGHT = 1
-        };
+    /// モーター制御用クラス
+    class Motor {
+    public:
+        /**
+         * コンストラクタ
+         * @param canHandle HALのCANハンドル
+         * @param can Canクラスのインスタンス
+         * @param address CANアドレス
+         */
+        explicit Motor(CAN_HandleTypeDef &canHandle, LowLayer::Can &can, std::uint8_t address);
+        /**
+         * デストラクタ
+         */
+        ~Motor();
+        /**
+         * モーターの最高速度の取得
+         * @return モーターの最高速度
+         */
+        static inline std::int32_t getMaxSpeed() {
+            return _maxSpeed;
+        }
+        /**
+         * モーターの最高速度の設定
+         * @param maxSpeed モーターの最高速度
+         */
+        static inline void setMaxSpeed(const std::int32_t maxSpeed) {
+            _maxSpeed = maxSpeed;
+        }
+        /**
+         * 初期化
+         * @param canAddr メインボードのCANアドレス
+         * @param maxSpeed モーターの最高速度
+         */
+        void init(std::uint8_t canAddr, std::int32_t maxSpeed);
+        /**
+         * モーター信号の更新
+         * @param duty モーター信号
+         */
+        inline void update(const std::int32_t duty) const {
+            _md.setDuty(duty);
+        }
 
-        /// モーター制御用クラス
-        class Motor {
-        public:
-            /**
-             * コンストラクタ
-             * @param canHandle HALのCANハンドル
-             * @param can Canクラスのインスタンス
-             * @param address CANアドレス
-             */
-            explicit Motor(CAN_HandleTypeDef &canHandle, LowLayer::Can &can, std::uint8_t address);
-            /**
-             * デストラクタ
-             */
-            ~Motor();
-            /**
-             * モーターの最高速度の取得
-             * @return モーターの最高速度
-             */
-            static std::int32_t getMaxSpeed();
-            /**
-             * モーターの最高速度の設定
-             * @param maxSpeed モーターの最高速度
-             */
-            static void setMaxSpeed(std::int32_t maxSpeed);
-            /**
-             * 初期化
-             * @param canAddr メインボードのCANアドレス
-             * @param maxSpeed モーターの最高速度
-             */
-            void init(std::uint8_t canAddr, std::int32_t maxSpeed);
-            /**
-             * モーター信号の更新
-             * @param duty モーター信号
-             */
-            void update(std::int32_t duty);
-
-        private:
-            /// Canクラスのインスタンス
-            LowLayer::Can _can;
-            /// HALのCANハンドル
-            CAN_HandleTypeDef &_hcan;
-            /// MotorDriverクラスのインスタンス
-            LowLayer::MotorDriver _md;
-            /// モータードライバーのCANアドレス
-            std::uint8_t _address;
-            /// モーターの最高速度
-            static std::int32_t _maxSpeed;
-        };
-    } // namespace v2
+    private:
+        /// Canクラスのインスタンス
+        LowLayer::Can _can;
+        /// HALのCANハンドル
+        CAN_HandleTypeDef &_hcan;
+        /// MotorDriverクラスのインスタンス
+        LowLayer::MotorDriver _md;
+        /// モータードライバーのCANアドレス
+        std::uint8_t _address;
+        /// モーターの最高速度
+        static std::int32_t _maxSpeed;
+    };
 } // namespace LibMecha
 
 #endif // _LIBMECHA_MOTOR_HH_
