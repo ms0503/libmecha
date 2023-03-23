@@ -32,26 +32,26 @@ namespace LibMecha {
         const StickTheta theta = sticksToTheta(LX, LY, RX, RY); // スティックの角度(右0、反時計回りが正、-π < x <= π)
         // 右前方
         if(index == 0) {
-            const float x = std::cos(theta.left - static_cast<float>(M_3PI_4));
-            const float steering = RX < 0.0f ? 1.0f : 1.0f - (RX / 64.0f);
+            const float x = std::sin(theta.left + static_cast<float>(M_PI_4));
+            const float steering = RX < 0.0f ? 1.0f + (RX / 64.0f) : 1.0f - (RX / 64.0f);
             return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
         }
         // 左前方
         if(index == 1) {
-            const float x = std::cos(theta.left + static_cast<float>(M_3PI_4));
-            const float steering = 0.0f < RX ? 1.0f : 1.0f - (-RX / 64.0f);
+            const float x = -std::sin(theta.left - static_cast<float>(M_PI_4));
+            const float steering = 0.0f < RX ? 1.0f + (-RX / 64.0f) : 1.0f - (-RX / 64.0f);
             return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
         }
         // 左後方
         if(index == 2) {
-            const float x = std::cos(theta.left + static_cast<float>(M_PI_4));
-            const float steering = 0.0f < RX ? 1.0f : 1.0f - (-RX / 64.0f);
+            const float x = -std::sin(theta.left + static_cast<float>(M_PI_4));
+            const float steering = 0.0f < RX ? 1.0f + (-RX / 64.0f) : 1.0f - (-RX / 64.0f);
             return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
         }
         // 右後方
         if(index == 3) {
-            const float x = std::cos(theta.left - static_cast<float>(M_PI_4));
-            const float steering = RX < 0.0f ? 1.0f : 1.0f - (RX / 64.0f);
+            const float x = std::sin(theta.left - static_cast<float>(M_PI_4));
+            const float steering = RX < 0.0f ? 1.0f + (RX / 64.0f) : 1.0f - (RX / 64.0f);
             return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
         }
         return 0;
