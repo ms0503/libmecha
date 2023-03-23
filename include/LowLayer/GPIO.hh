@@ -64,22 +64,44 @@ namespace LibMecha::LowLayer {
         explicit GPIO(const std::vector<Pin> &pin);
 
     protected:
+        /// GPIOピンステート
+        std::vector<PinState> _state;
+
         /**
          * HIGH信号の出力
          * @param index ピン内部配列のインデックス
          */
-        void high(std::size_t index) const;
+        inline void high(const std::size_t index) {
+            LL_GPIO_SetOutputPin(_gpio.at(index).gpio, _gpio.at(index).pin);
+            _state.at(index) = PinState::HIGH;
+        }
         /**
          * LOW信号の出力
          * @param index ピン内部配列のインデックス
          */
-        void low(std::size_t index) const;
+        inline void low(std::size_t index) {
+            LL_GPIO_ResetOutputPin(_gpio.at(index).gpio, _gpio.at(index).pin);
+            _state.at(index) = PinState::LOW;
+        }
+        /**
+         * HIGH/LOW信号の切り替え
+         * @param index ピン内部配列のインデックス
+         */
+        inline void toggle(const std::size_t index) {
+            LL_GPIO_TogglePin(_gpio.at(index).gpio, _gpio.at(index).pin);
+            if(_state.at(index) == PinState::LOW) _state.at(index) = PinState::HIGH;
+            else _state.at(index) = PinState::LOW;
+        }
         /**
          * GPIO信号の読み取り
          * @param index ピン内部配列のインデックス
          * @return 信号
          */
-        PinState read(std::size_t index) const;
+        inline PinState read(std::size_t index) const {
+            uint32_t state = LL_GPIO_IsInputPinSet(_gpio.at(index).gpio, _gpio.at(index).pin);
+            if(_gpio.at(index).mode == PinMode::INPUT_PULL_UP && state == 0 || _gpio.at(index).mode != PinMode::INPUT_PULL_UP && state == 1) return PinState::HIGH;
+            return PinState::LOW;
+        }
 
     private:
         /// GPIOピン情報
