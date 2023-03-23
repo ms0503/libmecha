@@ -81,11 +81,15 @@ namespace LibMecha::LowLayer {
         return updateDataSend(DriveCommand::kEmergency, sendDataArray);
     }
 
-    bool MotorDriver::updateDataSend(const DriveCommand cmd, const std::array<std::uint8_t, 4> sendData) const {
-        std::array<std::uint8_t, 4 + 1> sendDataArray {};
-        sendDataArray.at(0) = static_cast<std::uint8_t>(cmd);
-        std::copy(sendData.begin(), sendData.end(), sendDataArray.begin() + 1);
+    bool MotorDriver::updateDataSend(const DriveCommand cmd, const std::uint8_t sendData[4]) const {
+        std::array<std::uint8_t, 4 + 1> sendDataArray {
+            static_cast<std::uint8_t>(cmd),
+            sendData[0],
+            sendData[1],
+            sendData[2],
+            sendData[3]
+        };
 
-        return _can.send(_address, sendDataArray);
+        return _can.send(_address, sendDataArray.data(), sendDataArray.size());
     }
 } // namespace LibMecha::LowLayer

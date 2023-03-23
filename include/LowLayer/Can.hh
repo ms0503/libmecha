@@ -50,21 +50,7 @@ namespace LibMecha::LowLayer {
          * @param sendDataSize 送信データサイズ
          * @return 送信完了
          */
-        template<std::size_t SIZE>
-        inline bool send(std::uint8_t address, const std::uint8_t sendData[SIZE]) const {
-            std::array<std::uint8_t, SIZE> sendData1 {};
-            std::copy(sendData, sendData + SIZE, sendData1.begin());
-            return send(address, sendData1);
-        }
-        /**
-         * データの送信
-         * @param address 送信先CANアドレス
-         * @param sendData 送信データ
-         * @param sendDataSize 送信データサイズ
-         * @return 送信完了
-         */
-        template<std::size_t SIZE>
-        bool send(std::uint8_t address, std::array<std::uint8_t, SIZE> sendData) const;
+        bool send(std::uint8_t address, std::uint8_t *sendData, std::size_t sendDataSize) const;
         /**
          * 初期化
          * @param address 自身のCANアドレス

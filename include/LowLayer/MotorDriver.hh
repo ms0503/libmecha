@@ -127,18 +127,7 @@ namespace LibMecha::LowLayer {
          * @param sendData
          * @return
          */
-        inline bool updateDataSend(DriveCommand cmd, const std::uint8_t sendData[4]) const {
-            std::array<std::uint8_t, 4> sendData1 {};
-            std::copy(sendData, sendData + 4, sendData1.begin());
-            return updateDataSend(cmd, sendData1);
-        }
-        /**
-         * MD1枚のみのアップデート
-         * @param cmd コマンド
-         * @param sendData
-         * @return
-         */
-        bool updateDataSend(DriveCommand cmd, std::array<std::uint8_t, 4> sendData) const;
+        bool updateDataSend(DriveCommand cmd, const std::uint8_t sendData[4]) const;
     };
 } // namespace LibMecha::LowLayer
 
