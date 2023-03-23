@@ -17,42 +17,50 @@
 #include "Motor.hh"
 
 namespace LibMecha {
-    Controller::Controller():
-        _sbdbt(), _bs(), _deadZones() {
+    Controller::Controller(const MotorControlType type):
+        _sbdbt(), _bs(), _deadZones(), _type(type) {
     }
 
     Controller::~Controller() = default;
 
     std::int32_t Controller::stickToMotor(const std::uint8_t index) const {
         const LowLayer::SBDBT::AnalogState as = getStick();
-        const float LX = as.LX;
-        const float LY = as.LY;
-        const float RX = as.RX;
-        const float RY = as.RY;
-        const StickTheta theta = sticksToTheta(LX, LY, RX, RY); // スティックの角度(右0、反時計回りが正、-π < x <= π)
-        // 右前方
-        if(index == 0) {
-            const float x = std::sin(theta.left + static_cast<float>(M_PI_4));
-            const float steering = RX < 0.0f ? 1.0f + (RX / 64.0f) : 1.0f - (RX / 64.0f);
-            return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
-        }
-        // 左前方
-        if(index == 1) {
-            const float x = -std::sin(theta.left - static_cast<float>(M_PI_4));
-            const float steering = 0.0f < RX ? 1.0f + (-RX / 64.0f) : 1.0f - (-RX / 64.0f);
-            return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
-        }
-        // 左後方
-        if(index == 2) {
-            const float x = -std::sin(theta.left + static_cast<float>(M_PI_4));
-            const float steering = 0.0f < RX ? 1.0f + (-RX / 64.0f) : 1.0f - (-RX / 64.0f);
-            return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
-        }
-        // 右後方
-        if(index == 3) {
-            const float x = std::sin(theta.left - static_cast<float>(M_PI_4));
-            const float steering = RX < 0.0f ? 1.0f + (RX / 64.0f) : 1.0f - (RX / 64.0f);
-            return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
+        const float LX = _deadZones.at(0) < std::abs(as.LX) ? static_cast<float>(as.LX) : 0;
+        const float LY = _deadZones.at(1) < std::abs(as.LY) ? static_cast<float>(as.LY) : 0;
+        const float RX = _deadZones.at(2) < std::abs(as.RX) ? static_cast<float>(as.RX) : 0;
+        const float RY = _deadZones.at(3) < std::abs(as.RY) ? static_cast<float>(as.RY) : 0;
+        const StickTheta theta = sticksToTheta(LX, LY, RX, RY); // 偏角・スティックの角度(右0、反時計回りが正、-π < x <= π)
+        if(_type == MotorControlType::TRIANGLE) {
+            const float r = std::hypot(LX, LY) / STICK_MAX; // 動径
+            if(index == 0) return static_cast<std::int32_t>(std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
+            if(index == 1) return static_cast<std::int32_t>(-std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
+            if(index == 2) return static_cast<std::int32_t>(-std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
+            if(index == 3) return static_cast<std::int32_t>(std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
+        } else if(_type == MotorControlType::VECTOR) {
+            // 右前方
+            if(index == 0) {
+                const float x = std::sin(theta.left + static_cast<float>(M_PI_4));
+                const float steering = RX < 0.0f ? 1.0f + (RX / 64.0f) : 1.0f - (RX / 64.0f);
+                return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
+            }
+            // 左前方
+            if(index == 1) {
+                const float x = -std::sin(theta.left - static_cast<float>(M_PI_4));
+                const float steering = 0.0f < RX ? 1.0f + (-RX / 64.0f) : 1.0f - (-RX / 64.0f);
+                return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
+            }
+            // 左後方
+            if(index == 2) {
+                const float x = -std::sin(theta.left + static_cast<float>(M_PI_4));
+                const float steering = 0.0f < RX ? 1.0f + (-RX / 64.0f) : 1.0f - (-RX / 64.0f);
+                return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
+            }
+            // 右後方
+            if(index == 3) {
+                const float x = std::sin(theta.left - static_cast<float>(M_PI_4));
+                const float steering = RX < 0.0f ? 1.0f + (RX / 64.0f) : 1.0f - (RX / 64.0f);
+                return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
+            }
         }
         return 0;
     }

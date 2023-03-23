@@ -39,10 +39,18 @@ namespace LibMecha {
             float right;
         };
 
+        /// モーターの制御方式
+        enum class MotorControlType : std::uint8_t {
+            /// 三角関数
+            TRIANGLE,
+            /// ベクトル
+            VECTOR
+        };
+
         /**
          * コンストラクタ
          */
-        explicit Controller();
+        explicit Controller(MotorControlType type);
         /**
          * デストラクタ
          */
@@ -178,6 +186,8 @@ namespace LibMecha {
         LowLayer::SBDBT::ButtonAssignment _bs;
         /// スティックのデッドゾーン
         std::array<std::int32_t, 4> _deadZones;
+        /// モーターの制御方式
+        MotorControlType _type;
 
         /**
          * スティック入力による角度の導出
