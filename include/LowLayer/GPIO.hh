@@ -65,7 +65,7 @@ namespace LibMecha::LowLayer {
 
     protected:
         /// GPIOピンステート
-        std::vector<PinState> _state;
+        std::vector<PinState> _state {};
 
         /**
          * HIGH信号の出力

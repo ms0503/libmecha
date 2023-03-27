@@ -25,13 +25,14 @@ namespace LibMecha {
 
     std::int32_t Controller::stickToMotor(const std::uint8_t index) const {
         const LowLayer::SBDBT::AnalogState as = getStick();
-        const float LX = _deadZones.at(0) < std::abs(as.LX) ? static_cast<float>(as.LX) : 0;
-        const float LY = _deadZones.at(1) < std::abs(as.LY) ? static_cast<float>(as.LY) : 0;
-        const float RX = _deadZones.at(2) < std::abs(as.RX) ? static_cast<float>(as.RX) : 0;
-        const float RY = _deadZones.at(3) < std::abs(as.RY) ? static_cast<float>(as.RY) : 0;
+        const float LX = _deadZones.at(0) < std::abs(as.LX) ? static_cast<float>(as.LX) : 0.0f;
+        const float LY = _deadZones.at(1) < std::abs(as.LY) ? static_cast<float>(as.LY) : 0.0f;
+        const float RX = _deadZones.at(2) < std::abs(as.RX) ? static_cast<float>(as.RX) : 0.0f;
+        const float RY = _deadZones.at(3) < std::abs(as.RY) ? static_cast<float>(as.RY) : 0.0f;
         const StickTheta theta = sticksToTheta(LX, LY, RX, RY); // 偏角・スティックの角度(右0、反時計回りが正、-π < x <= π)
         if(_type == MotorControlType::TRIANGLE) {
             const float r = std::hypot(LX, LY) / STICK_MAX; // 動径
+            if(RX != 0.0f) return static_cast<std::int32_t>(RX * 0.02f * static_cast<float>(Motor::getMaxSpeed()));
             if(index == 0) return static_cast<std::int32_t>(std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
             if(index == 1) return static_cast<std::int32_t>(-std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
             if(index == 2) return static_cast<std::int32_t>(-std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
