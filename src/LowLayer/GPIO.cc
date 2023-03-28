@@ -15,32 +15,8 @@
 
 #include "LowLayer/GPIO.hh"
 
-namespace LibMecha {
-    inline namespace v2 {
-        namespace LowLayer {
-            GPIO::GPIO(const Pin pin, const PinMode mode):
-                _gpio(pin), _mode(mode) {
-            }
-
-            GPIO::GPIO(GPIO_TypeDef *const gpio, const std::uint32_t pin, const PinMode mode):
-                _gpio({ .gpio = gpio, .pin = pin }), _mode(mode) {
-            }
-
-            GPIO::~GPIO() = default;
-
-            void GPIO::high() const {
-                LL_GPIO_SetOutputPin(_gpio.gpio, _gpio.pin);
-            }
-
-            void GPIO::low() const {
-                LL_GPIO_ResetOutputPin(_gpio.gpio, _gpio.pin);
-            }
-
-            GPIO::PinState GPIO::read() const {
-                uint32_t state = LL_GPIO_IsInputPinSet(_gpio.gpio, _gpio.pin);
-                if(_mode == PinMode::INPUT_PULL_UP && state == 0 || _mode != PinMode::INPUT_PULL_UP && state == 1) return PinState::HIGH;
-                return PinState::LOW;
-            }
-        }
+namespace LibMecha::LowLayer {
+    GPIO::GPIO(const std::vector<Pin> &pin):
+        _gpio(pin), _state() {
     }
-}
+} // namespace LibMecha::LowLayer

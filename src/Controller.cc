@@ -15,80 +15,54 @@
 
 #include "Controller.hh"
 #include "Motor.hh"
-#include <cmath>
-#include <functional>
-#include <map>
 
 namespace LibMecha {
-    inline namespace v2 {
-        const std::map<EnumMotor, std::int8_t> Controller::DEAD_ZONES = {
-            { EnumMotor::FL, 0 },
-            { EnumMotor::FR, 0 },
-            { EnumMotor::RL, 0 },
-            { EnumMotor::RR, 0 }
-        };
+    Controller::Controller(const MotorControlType type):
+        _sbdbt(), _bs(), _deadZones(), _type(type) {
+    }
 
-        Controller::Controller(USART_TypeDef *const usart):
-            _usart(usart), _sbdbt(usart), _bs() {
+    Controller::~Controller() = default;
+
+    std::int32_t Controller::stickToMotor(const std::uint8_t index) const {
+        const LowLayer::SBDBT::AnalogState as = getStick();
+        const float LX = _deadZones.at(0) < std::abs(as.LX) ? static_cast<float>(as.LX) : 0.0f;
+        const float LY = _deadZones.at(1) < std::abs(as.LY) ? static_cast<float>(as.LY) : 0.0f;
+        const float RX = _deadZones.at(2) < std::abs(as.RX) ? static_cast<float>(as.RX) : 0.0f;
+        const float RY = _deadZones.at(3) < std::abs(as.RY) ? static_cast<float>(as.RY) : 0.0f;
+        const StickTheta theta = sticksToTheta(LX, LY, RX, RY); // 偏角・スティックの角度(右0、反時計回りが正、-π < x <= π)
+        if(_type == MotorControlType::TRIANGLE) {
+            const float r = std::hypot(LX, LY) / STICK_MAX; // 動径
+            if(RX != 0.0f) return static_cast<std::int32_t>(RX * 0.02f * static_cast<float>(Motor::getMaxSpeed()));
+            if(index == 0) return static_cast<std::int32_t>(std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
+            if(index == 1) return static_cast<std::int32_t>(-std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
+            if(index == 2) return static_cast<std::int32_t>(-std::sin(theta.left + M_PI_4) * r * Motor::getMaxSpeed());
+            if(index == 3) return static_cast<std::int32_t>(std::sin(theta.left - M_PI_4) * r * Motor::getMaxSpeed());
+        } else if(_type == MotorControlType::VECTOR) {
+            // 右前方
+            if(index == 0) {
+                const float x = std::sin(theta.left + static_cast<float>(M_PI_4));
+                const float steering = RX < 0.0f ? 1.0f + (RX / 64.0f) : 1.0f - (RX / 64.0f);
+                return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
+            }
+            // 左前方
+            if(index == 1) {
+                const float x = -std::sin(theta.left - static_cast<float>(M_PI_4));
+                const float steering = 0.0f < RX ? 1.0f + (-RX / 64.0f) : 1.0f - (-RX / 64.0f);
+                return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
+            }
+            // 左後方
+            if(index == 2) {
+                const float x = -std::sin(theta.left + static_cast<float>(M_PI_4));
+                const float steering = 0.0f < RX ? 1.0f + (-RX / 64.0f) : 1.0f - (-RX / 64.0f);
+                return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
+            }
+            // 右後方
+            if(index == 3) {
+                const float x = std::sin(theta.left - static_cast<float>(M_PI_4));
+                const float steering = RX < 0.0f ? 1.0f + (RX / 64.0f) : 1.0f - (RX / 64.0f);
+                return static_cast<std::int32_t>(x * steering * static_cast<float>(Motor::getMaxSpeed()));
+            }
         }
-
-        Controller::~Controller() = default;
-
-        Motor::State Controller::stickToMotor() {
-            const LowLayer::SBDBT::AnalogState as = _sbdbt.getAnalogState();
-            const float FL = 3.0f / 8.0f * M_PI;
-            const float FR = 1.0f / 8.0f * M_PI;
-            const float RL = 5.0f / 8.0f * M_PI;
-            const float RR = 7.0f / 8.0f * M_PI;
-            const StickTheta theta = sticksToTheta(as.LX, as.LY, as.RX, as.RY);
-            const float powerFL = std::sin(theta.left + FL) * static_cast<float>(Motor::getMaxSpeed());
-            const float powerFR = std::sin(theta.left + FR) * static_cast<float>(Motor::getMaxSpeed());
-            const float powerRL = std::sin(theta.left + RL) * static_cast<float>(Motor::getMaxSpeed());
-            const float powerRR = std::sin(theta.left + RR) * static_cast<float>(Motor::getMaxSpeed());
-            const float powerMax = std::max<float>(std::max<float>(std::max<float>(std::abs(powerFL), std::abs(powerFR)), std::abs(powerRL)), std::abs(powerRR));
-            return {
-                .FL = static_cast<std::int32_t>(powerFL * powerMax),
-                .FR = static_cast<std::int32_t>(powerFR * powerMax),
-                .RL = static_cast<std::int32_t>(powerRL * powerMax),
-                .RR = static_cast<std::int32_t>(powerRR * powerMax)
-            };
-        }
-
-        void Controller::init() {
-            _sbdbt.init();
-        }
-
-        bool Controller::isPush(LowLayer::SBDBT::ButtonState button) {
-            return button == LowLayer::SBDBT::ButtonState::kPush;
-        }
-
-        bool Controller::isPushEdge(LowLayer::SBDBT::ButtonState button) {
-            return button == LowLayer::SBDBT::ButtonState::kPushEdge;
-        }
-
-        bool Controller::isRelease(LowLayer::SBDBT::ButtonState button) {
-            return button == LowLayer::SBDBT::ButtonState::kRelease;
-        }
-
-        bool Controller::isReleaseEdge(LowLayer::SBDBT::ButtonState button) {
-            return button == LowLayer::SBDBT::ButtonState::kReleaseEdge;
-        }
-
-        void Controller::receiveProcessing(const std::uint8_t (&receiveData)[LowLayer::SBDBT_RECEIVE_SIZE], const std::function<void(const LowLayer::SBDBT::ButtonAssignment &bs)> &callback) {
-            if(!_sbdbt.receiveCheck(std::to_array(receiveData))) return;
-            _bs = _sbdbt.receiveProcessing();
-            callback(_bs);
-        }
-
-        float Controller::stickToTheta(const float x, const float y) {
-            return std::atan2(y, x);
-        }
-
-        Controller::StickTheta Controller::sticksToTheta(const float leftX, const float leftY, const float rightX, const float rightY) {
-            return {
-                .left = stickToTheta(leftX, leftY),
-                .right = stickToTheta(rightX, rightY)
-            };
-        }
-    }// namespace v2
-}// namespace LibMecha
+        return 0;
+    }
+} // namespace LibMecha

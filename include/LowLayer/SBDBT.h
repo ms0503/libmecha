@@ -23,10 +23,10 @@ extern "C" {
 #include <stdint.h>
 
 /// SBDBTのデータサイズ
-#define C_SBDBT_RECEIVE_SIZE ((unsigned short)8)
+#define C_SBDBT_RECEIVE_SIZE ((uint16_t)8)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif// _LIBMECHA_SBDBT_H_
+#endif // _LIBMECHA_SBDBT_H_
