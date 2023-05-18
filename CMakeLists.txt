@@ -5,18 +5,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(mecha)
 
-set(PROJECT_ROOT ${CMAKE_SOURCE_DIR})
+set(PROJECT_ROOT "${CMAKE_SOURCE_DIR}" CACHE STRING "")
 if(LIBMECHA_ONLY)
-    set(PROJECT_ROOT ${CMAKE_SOURCE_DIR}/..)
+    set(PROJECT_ROOT "${CMAKE_SOURCE_DIR}/.." CACHE STRING "")
 endif()
 
-include_directories(include)
-include_directories(${PROJECT_ROOT}/Core/Inc)
-include_directories(${PROJECT_ROOT}/Drivers/CMSIS/Device/ST/STM32F4xx/Include)
-include_directories(${PROJECT_ROOT}/Drivers/CMSIS/Include)
-include_directories(${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Inc)
+include_directories(include ${PROJECT_ROOT}/Core/Inc ${PROJECT_ROOT}/Drivers/CMSIS/Device/ST/STM32F4xx/Include ${PROJECT_ROOT}/Drivers/CMSIS/Include ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Inc)
 
 file(GLOB SRCS src/*.cc src/**/*.cc)
 
 add_library(mecha STATIC ${SRCS})
-

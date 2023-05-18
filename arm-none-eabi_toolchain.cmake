@@ -9,7 +9,7 @@ set(CMAKE_EXE_LINKER arm-none-eabi-g++)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 unset(BASE_FLAGS CACHE)
-set(BASE_FLAGS "-DDEBUG -DSTM32F407xx -DUSE_HAL_DRIVER -DUSE_FULL_LL_DRIVER -Os -DNDEBUG -mcpu=cortex-m4 -mthumb -mthumb-interwork -ffunction-sections -fdata-sections -fno-common -fmessage-length=0 -Os" CACHE STRING "" FORCE)
+set(BASE_FLAGS "-DDEBUG -DUSE_HAL_DRIVER -DUSE_FULL_LL_DRIVER -Os -DNDEBUG -mcpu=cortex-m4 -mthumb -mthumb-interwork -ffunction-sections -fdata-sections -fno-common -fmessage-length=0 -Os" CACHE STRING "" FORCE)
 
 unset(CMAKE_ASM_FLAGS CACHE)
 set(CMAKE_ASM_FLAGS "${BASE_FLAGS} -x assembler-with-cpp" CACHE STRING "" FORCE)
