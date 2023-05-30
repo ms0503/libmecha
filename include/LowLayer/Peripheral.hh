@@ -13,8 +13,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMECHA_PERIPHERAL_HH_
-#define LIBMECHA_PERIPHERAL_HH_
+#pragma once
 
 namespace LibMecha::LowLayer {
     /// ペリフェラル識別用ベースクラス
@@ -30,5 +29,3 @@ namespace LibMecha::LowLayer {
         virtual ~Peripheral();
     };
 } // namespace LibMecha::LowLayer
-
-#endif // LIBMECHA_PERIPHERAL_HH_

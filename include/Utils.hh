@@ -13,10 +13,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMECHA_UTILS_HH_
-#define LIBMECHA_UTILS_HH_
-
-#include <cstdlib>
+#pragma once
 
 namespace LibMecha {
     /// ユーティリティクラス
@@ -32,5 +29,3 @@ namespace LibMecha {
         ~Utils();
     };
 } // namespace LibMecha
-
-#endif // LIBMECHA_UTILS_HH_

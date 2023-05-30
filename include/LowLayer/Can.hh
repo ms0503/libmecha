@@ -13,8 +13,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMECHA_CAN_HH_
-#define LIBMECHA_CAN_HH_
+#pragma once
 
 #include "Peripheral.hh"
 #include "stm32f4xx_hal.h"
@@ -72,5 +71,3 @@ namespace LibMecha::LowLayer {
         std::uint32_t _receiveInterrupt = CAN_IT_RX_FIFO0_MSG_PENDING;
     };
 } // namespace LibMecha::LowLayer
-
-#endif // LIBMECHA_CAN_HH_

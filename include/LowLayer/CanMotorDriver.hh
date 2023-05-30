@@ -13,8 +13,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMECHA_MOTORDRIVER_HH_
-#define LIBMECHA_MOTORDRIVER_HH_
+#pragma once
 
 #include "Can.hh"
 #include "LowLayer/IMotorDriver.hh"
@@ -130,5 +129,3 @@ namespace LibMecha::LowLayer {
         }
     };
 } // namespace LibMecha::LowLayer
-
-#endif // LIBMECHA_MOTORDRIVER_HH_

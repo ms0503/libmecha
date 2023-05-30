@@ -13,8 +13,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMECHA_MOTOR_HH_
-#define LIBMECHA_MOTOR_HH_
+#pragma once
 
 #include "IMotor.hh"
 #include "LowLayer/CanMotorDriver.hh"
@@ -61,5 +60,3 @@ namespace LibMecha {
         std::uint8_t _address;
     };
 } // namespace LibMecha
-
-#endif // LIBMECHA_MOTOR_HH_

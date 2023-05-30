@@ -13,8 +13,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMECHA_SBDBT_HH_
-#define LIBMECHA_SBDBT_HH_
+#pragma once
 
 #include "LowLayer/SBDBT.h"
 #include "Peripheral.hh"
@@ -193,5 +192,3 @@ namespace LibMecha::LowLayer {
         static ButtonState identifyButtonState(ButtonState lastButtonState, bool isPush);
     };
 } // namespace LibMecha::LowLayer
-
-#endif // LIBMECHA_SBDBT_HH_

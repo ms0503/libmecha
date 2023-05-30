@@ -13,8 +13,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMECHA_CONTROLLER_HH_
-#define LIBMECHA_CONTROLLER_HH_
+#pragma once
 
 #include "CanMotor.hh"
 #include "LowLayer/SBDBT.hh"
@@ -214,5 +213,3 @@ namespace LibMecha {
         }
     };
 } // namespace LibMecha
-
-#endif // LIBMECHA_CONTROLLER_HH_

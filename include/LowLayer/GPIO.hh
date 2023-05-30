@@ -13,8 +13,7 @@
 *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef LIBMECHA_GPIO_HH_
-#define LIBMECHA_GPIO_HH_
+#pragma once
 
 #include "Peripheral.hh"
 #include "stm32f4xx_ll_gpio.h"
@@ -108,5 +107,3 @@ namespace LibMecha::LowLayer {
         std::vector<Pin> _gpio;
     };
 } // namespace LibMecha::LowLayer
-
-#endif // LIBMECHA_GPIO_HH_

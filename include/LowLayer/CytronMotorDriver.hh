@@ -13,8 +13,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMECHA_CYTRONMOTORDRIVER_HH_
-#define LIBMECHA_CYTRONMOTORDRIVER_HH_
+#pragma once
 
 #include "LowLayer/IMotorDriver.hh"
 #include <cstdint>
@@ -27,5 +26,3 @@ namespace LibMecha::LowLayer {
         bool setDuty(std::int32_t duty) override;
     };
 }
-
-#endif // LIBMECHA_CYTRONMOTORDRIVER_HH_
