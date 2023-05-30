@@ -13,6 +13,8 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if (!defined DISABLE_HAL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN && !defined DISABLE_CANMOTORDRIVER)
+
 #include "LowLayer/CanMotorDriver.hh"
 #include <algorithm>
 
@@ -82,3 +84,5 @@ namespace LibMecha::LowLayer {
         return _can.send(_address, sendDataArray);
     }
 } // namespace LibMecha::LowLayer
+
+#endif // (!defined DISABLE_HAL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN && !defined DISABLE_CANMOTORDRIVER)

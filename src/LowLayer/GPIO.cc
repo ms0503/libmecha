@@ -13,6 +13,8 @@
 *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#if (!defined DISABLE_LL && !defined DISABLE_PERIPHERAL && !defined DISABLE_GPIO)
+
 #include "LowLayer/GPIO.hh"
 
 namespace LibMecha::LowLayer {
@@ -20,3 +22,5 @@ namespace LibMecha::LowLayer {
         _gpio(pin), _state() {
     }
 } // namespace LibMecha::LowLayer
+
+#endif // (!defined DISABLE_LL && !defined DISABLE_PERIPHERAL && !defined DISABLE_GPIO)

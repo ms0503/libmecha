@@ -13,6 +13,8 @@
 *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#if (!defined DISABLE_HAL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN && !defined DISABLE_CANMOTOR)
+
 #include "CanMotor.hh"
 
 namespace LibMecha {
@@ -31,3 +33,5 @@ namespace LibMecha {
         setMaxSpeed(maxSpeed);
     }
 } // namespace LibMecha
+
+#endif // (!defined DISABLE_HAL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN && !defined DISABLE_CANMOTOR)

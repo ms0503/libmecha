@@ -13,6 +13,8 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if (!defined DISABLE_HAL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN)
+
 #include "LowLayer/Can.hh"
 #include "Utils.hh"
 
@@ -101,3 +103,5 @@ namespace LibMecha::LowLayer {
 } // namespace LibMecha::LowLayer
 
 #pragma clang diagnostic pop
+
+#endif // (!defined DISABLE_HAL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN)

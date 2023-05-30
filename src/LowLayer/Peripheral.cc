@@ -13,9 +13,13 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if (!defined DISABLE_PERIPHERAL)
+
 #include "LowLayer/Peripheral.hh"
 
 namespace LibMecha::LowLayer {
     Peripheral::Peripheral() = default;
     Peripheral::~Peripheral() = default;
 } // namespace LibMecha::LowLayer
+
+#endif // (!defined DISABLE_PERIPHERAL)

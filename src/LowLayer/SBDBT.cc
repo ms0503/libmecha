@@ -13,6 +13,8 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if (!defined DISABLE_LL && !defined DISABLE_PERIPHERAL && !defined DISABLE_USART && !defined DISABLE_SBDBT)
+
 #include "LowLayer/SBDBT.hh"
 #include "Utils.hh"
 #include <numeric>
@@ -112,3 +114,5 @@ namespace LibMecha::LowLayer {
         return ButtonState::kRelease;
     }
 } // namespace LibMecha::LowLayer
+
+#endif // (!defined DISABLE_LL && !defined DISABLE_PERIPHERAL && !defined DISABLE_USART && !defined DISABLE_SBDBT)
