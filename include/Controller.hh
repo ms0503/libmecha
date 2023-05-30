@@ -13,11 +13,11 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _LIBMECHA_CONTROLLER_HH_
-#define _LIBMECHA_CONTROLLER_HH_
+#ifndef LIBMECHA_CONTROLLER_HH_
+#define LIBMECHA_CONTROLLER_HH_
 
+#include "CanMotor.hh"
 #include "LowLayer/SBDBT.hh"
-#include "Motor.hh"
 #include <cmath>
 #include <cstdint>
 #include <functional>
@@ -59,7 +59,7 @@ namespace LibMecha {
          * スティック入力の取得
          * @return スティック入力
          */
-        inline LowLayer::SBDBT::AnalogState getStick() const {
+        [[nodiscard]] inline LowLayer::SBDBT::AnalogState getStick() const {
             return _sbdbt.getAnalogState();
         }
         /**
@@ -67,7 +67,7 @@ namespace LibMecha {
          * @param index モーターの通し番号(右を基準に反時計回り)
          * @return モーター信号
          */
-        std::int32_t stickToMotor(std::uint8_t index) const;
+        [[nodiscard]] std::int32_t stickToMotor(std::uint8_t index) const;
         /**
          * 初期化
          * @param deadZones デッドゾーンのリスト
@@ -159,7 +159,7 @@ namespace LibMecha {
          * スティックのデッドゾーンの取得
          * @return スティックのデッドゾーン
          */
-        inline std::array<std::int32_t, 4> getDeadZones() const {
+        [[nodiscard]] inline std::array<std::int32_t, 4> getDeadZones() const {
             return _deadZones;
         }
         /**
@@ -215,4 +215,4 @@ namespace LibMecha {
     };
 } // namespace LibMecha
 
-#endif // _LIBMECHA_CONTROLLER_HH_
+#endif // LIBMECHA_CONTROLLER_HH_

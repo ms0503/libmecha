@@ -1,7 +1,7 @@
 /*
- * Utils.hh
+ * IMotor.cc
  *
- *  Created on: 2023/03/22
+ *  Created on: 2023/05/22
  *      Author: ms0503
  *
  *  This file is part of libmecha.
@@ -13,24 +13,8 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMECHA_UTILS_HH_
-#define LIBMECHA_UTILS_HH_
-
-#include <cstdlib>
+#include <cstdint>
 
 namespace LibMecha {
-    /// ユーティリティクラス
-    class Utils {
-    public:
-        /**
-         * コンストラクタ
-         */
-        explicit Utils();
-        /**
-         * デストラクタ
-         */
-        ~Utils();
-    };
-} // namespace LibMecha
-
-#endif // LIBMECHA_UTILS_HH_
+    std::int32_t maxSpeed;
+}

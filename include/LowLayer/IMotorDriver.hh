@@ -1,7 +1,7 @@
 /*
- * Utils.hh
+ * IMotorDriver.hh
  *
- *  Created on: 2023/03/22
+ *  Created on: 2023/05/22
  *      Author: ms0503
  *
  *  This file is part of libmecha.
@@ -13,24 +13,23 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMECHA_UTILS_HH_
-#define LIBMECHA_UTILS_HH_
+#include "LowLayer/Peripheral.hh"
+#include <cstdint>
 
-#include <cstdlib>
-
-namespace LibMecha {
-    /// ユーティリティクラス
-    class Utils {
+namespace LibMecha::LowLayer {
+    class IMotorDriver : public Peripheral {
     public:
-        /**
-         * コンストラクタ
-         */
-        explicit Utils();
-        /**
-         * デストラクタ
-         */
-        ~Utils();
-    };
-} // namespace LibMecha
+        using Peripheral::Peripheral;
 
-#endif // LIBMECHA_UTILS_HH_
+        /**
+         * 初期化
+         */
+        virtual void init() = 0;
+        /**
+         * Duty比の設定
+         * @param duty Duty比
+         * @return 設定完了
+         */
+        virtual bool setDuty(std::int32_t duty) = 0;
+    };
+}

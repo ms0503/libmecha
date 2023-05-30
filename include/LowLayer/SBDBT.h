@@ -13,8 +13,8 @@
 *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef _LIBMECHA_SBDBT_H_
-#define _LIBMECHA_SBDBT_H_
+#ifndef LIBMECHA_SBDBT_H_
+#define LIBMECHA_SBDBT_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,4 +29,4 @@ extern "C" {
 }
 #endif
 
-#endif // _LIBMECHA_SBDBT_H_
+#endif // LIBMECHA_SBDBT_H_

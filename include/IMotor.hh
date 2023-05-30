@@ -1,7 +1,7 @@
 /*
- * Utils.hh
+ * IMotor.hh
  *
- *  Created on: 2023/03/22
+ *  Created on: 2023/05/22
  *      Author: ms0503
  *
  *  This file is part of libmecha.
@@ -13,24 +13,35 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMECHA_UTILS_HH_
-#define LIBMECHA_UTILS_HH_
+#ifndef LIBMECHA_IMOTOR_HH_
+#define LIBMECHA_IMOTOR_HH_
 
-#include <cstdlib>
+#include "LowLayer/IMotorDriver.hh"
+#include <cstdint>
 
 namespace LibMecha {
-    /// ユーティリティクラス
-    class Utils {
+    /// モーターの最高速度
+    extern std::int32_t maxSpeed;
+
+    template<class MotorDriver>
+    class IMotor {
     public:
-        /**
-         * コンストラクタ
-         */
-        explicit Utils();
         /**
          * デストラクタ
          */
-        ~Utils();
-    };
-} // namespace LibMecha
+        virtual ~IMotor() = 0;
+        /**
+         * モーター信号の更新
+         * @param duty モーター信号
+         */
+        virtual inline void update(const std::int32_t duty) const {
+            _md.setDuty(duty);
+        }
 
-#endif // LIBMECHA_UTILS_HH_
+    protected:
+        /// MotorDriverクラスのインスタンス
+        MotorDriver _md;
+    };
+}
+
+#endif // LIBMECHA_IMOTOR_HH_

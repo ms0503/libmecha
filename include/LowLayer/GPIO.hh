@@ -13,8 +13,8 @@
 *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef _LIBMECHA_GPIO_HH_
-#define _LIBMECHA_GPIO_HH_
+#ifndef LIBMECHA_GPIO_HH_
+#define LIBMECHA_GPIO_HH_
 
 #include "Peripheral.hh"
 #include "stm32f4xx_ll_gpio.h"
@@ -97,7 +97,7 @@ namespace LibMecha::LowLayer {
          * @param index ピン内部配列のインデックス
          * @return 信号
          */
-        inline PinState read(std::size_t index) const {
+        [[nodiscard]] inline PinState read(std::size_t index) const {
             uint32_t state = LL_GPIO_IsInputPinSet(_gpio.at(index).gpio, _gpio.at(index).pin);
             if(_gpio.at(index).mode == PinMode::INPUT_PULL_UP && state == 0 || _gpio.at(index).mode != PinMode::INPUT_PULL_UP && state == 1) return PinState::HIGH;
             return PinState::LOW;
@@ -109,4 +109,4 @@ namespace LibMecha::LowLayer {
     };
 } // namespace LibMecha::LowLayer
 
-#endif // _LIBMECHA_GPIO_HH_
+#endif // LIBMECHA_GPIO_HH_

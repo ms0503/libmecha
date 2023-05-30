@@ -13,8 +13,8 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _LIBMECHA_SBDBT_HH_
-#define _LIBMECHA_SBDBT_HH_
+#ifndef LIBMECHA_SBDBT_HH_
+#define LIBMECHA_SBDBT_HH_
 
 #include "LowLayer/SBDBT.h"
 #include "Peripheral.hh"
@@ -100,7 +100,7 @@ namespace LibMecha::LowLayer {
          * アナログスティックの状態の取得
          * @return アナログスティックの状態
          */
-        inline AnalogState getAnalogState() const {
+        [[nodiscard]] inline AnalogState getAnalogState() const {
             return _as;
         }
         /**
@@ -194,4 +194,4 @@ namespace LibMecha::LowLayer {
     };
 } // namespace LibMecha::LowLayer
 
-#endif // _LIBMECHA_SBDBT_HH_
+#endif // LIBMECHA_SBDBT_HH_

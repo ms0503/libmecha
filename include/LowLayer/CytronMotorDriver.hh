@@ -1,7 +1,7 @@
 /*
- * Utils.hh
+ * CytronMotorDriver.hh
  *
- *  Created on: 2023/03/22
+ *  Created on: 2023/05/23
  *      Author: ms0503
  *
  *  This file is part of libmecha.
@@ -13,24 +13,19 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMECHA_UTILS_HH_
-#define LIBMECHA_UTILS_HH_
+#ifndef LIBMECHA_CYTRONMOTORDRIVER_HH_
+#define LIBMECHA_CYTRONMOTORDRIVER_HH_
 
-#include <cstdlib>
+#include "LowLayer/IMotorDriver.hh"
+#include <cstdint>
 
-namespace LibMecha {
-    /// ユーティリティクラス
-    class Utils {
-    public:
-        /**
-         * コンストラクタ
-         */
-        explicit Utils();
-        /**
-         * デストラクタ
-         */
-        ~Utils();
+namespace LibMecha::LowLayer {
+    class CytronMotorDriver : public IMotorDriver {
+        using IMotorDriver::IMotorDriver;
+
+        void init() override;
+        bool setDuty(std::int32_t duty) override;
     };
-} // namespace LibMecha
+}
 
-#endif // LIBMECHA_UTILS_HH_
+#endif // LIBMECHA_CYTRONMOTORDRIVER_HH_

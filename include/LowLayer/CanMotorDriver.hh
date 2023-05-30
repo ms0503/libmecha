@@ -1,5 +1,5 @@
 /*
- * MotorDriver.hh
+ * CanMotorDriver.hh
  *
  *  Created on: 2019/06/29
  *      Author: youda, ms0503
@@ -13,21 +13,17 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _LIBMECHA_MOTORDRIVER_HH_
-#define _LIBMECHA_MOTORDRIVER_HH_
+#ifndef LIBMECHA_MOTORDRIVER_HH_
+#define LIBMECHA_MOTORDRIVER_HH_
 
 #include "Can.hh"
-#include "Peripheral.hh"
-#include "stm32f4xx_hal.h"
-#include <array>
-#include <cassert>
-#include <cstring>
+#include "LowLayer/IMotorDriver.hh"
 
 namespace LibMecha::LowLayer {
     /// メカトロ製モータードライバー用低レイヤークラス
-    class MotorDriver : public Peripheral {
+    class CanMotorDriver : public IMotorDriver {
     public:
-        using Peripheral::Peripheral;
+        using IMotorDriver::IMotorDriver;
 
         /// モータドライバーのコマンド
         enum class DriveCommand : std::uint8_t {
@@ -54,11 +50,8 @@ namespace LibMecha::LowLayer {
          * @param can Canクラスのインスタンス
          * @param address CANアドレス
          */
-        explicit MotorDriver(Can &can, std::uint8_t address);
-        /**
-         * 初期化
-         */
-        void init() const;
+        explicit CanMotorDriver(Can &can, std::uint8_t address);
+        void init() override;
         /**
          * PID制御の初期化
          * @param kp Kp値
@@ -72,7 +65,7 @@ namespace LibMecha::LowLayer {
          * Canクラスのインスタンスの取得
          * @return Canクラスのインスタンス
          */
-        inline Can &getCan() const {
+        [[nodiscard]] inline Can &getCan() const {
             return _can;
         }
         /**
@@ -81,12 +74,7 @@ namespace LibMecha::LowLayer {
          * @return 設定完了
          */
         bool setTargetRPM(std::int32_t targetRpm) const;
-        /**
-         * Duty比の設定
-         * @param duty Duty比
-         * @return 設定完了
-         */
-        bool setDuty(std::int32_t duty) const;
+        bool setDuty(std::int32_t duty) override;
         /**
          * パラメータの設定
          * @param mode コマンド
@@ -94,13 +82,7 @@ namespace LibMecha::LowLayer {
          * @return 設定完了
          */
         inline bool setParameter(DriveCommand cmd, float fparamValue) const {
-            union {
-                float fparamValue1;
-                std::uint32_t uparamValue;
-            };
-            fparamValue1 = fparamValue;
-
-            return setParameter(cmd, uparamValue);
+            return setParameter(cmd, *reinterpret_cast<std::uint32_t *>(&fparamValue));
         }
         /**
          * パラメータの設定
@@ -124,11 +106,29 @@ namespace LibMecha::LowLayer {
         /**
          * MD1枚のみのアップデート
          * @param cmd コマンド
-         * @param sendData
+         * @param sendData 送信データ
          * @return
          */
-        bool updateDataSend(DriveCommand cmd, const std::uint8_t sendData[4]) const;
+        bool updateDataSend(DriveCommand cmd, const std::uint8_t (&sendData)[4]) const;
+
+        /**
+         * MD1枚のみのアップデート
+         * @param cmd コマンド
+         * @param sendData 送信データ
+         * @return
+         */
+        inline bool updateDataSend(DriveCommand cmd, const std::array<std::uint8_t, 4> (&sendData)) const {
+            const std::uint8_t (&sendDataArray)[4 + 1] {
+                static_cast<std::uint8_t>(cmd),
+                sendData.at(0),
+                sendData.at(1),
+                sendData.at(2),
+                sendData.at(3)
+            };
+
+            return updateDataSend(cmd, sendDataArray);
+        }
     };
 } // namespace LibMecha::LowLayer
 
-#endif // _LIBMECHA_MOTORDRIVER_HH_
+#endif // LIBMECHA_MOTORDRIVER_HH_

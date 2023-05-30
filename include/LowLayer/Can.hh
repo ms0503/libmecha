@@ -13,8 +13,8 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _LIBMECHA_CAN_HH_
-#define _LIBMECHA_CAN_HH_
+#ifndef LIBMECHA_CAN_HH_
+#define LIBMECHA_CAN_HH_
 
 #include "Peripheral.hh"
 #include "stm32f4xx_hal.h"
@@ -45,12 +45,13 @@ namespace LibMecha::LowLayer {
         void sendRemote(std::uint8_t address) const;
         /**
          * データの送信
+         * @tparam SIZE 送信データサイズ
          * @param address 送信先CANアドレス
          * @param sendData 送信データ
-         * @param sendDataSize 送信データサイズ
          * @return 送信完了
          */
-        bool send(std::uint8_t address, std::uint8_t *sendData, std::size_t sendDataSize) const;
+        template<std::size_t SIZE>
+        bool send(std::uint8_t address, const std::uint8_t (&sendData)[SIZE]) const;
         /**
          * 初期化
          * @param address 自身のCANアドレス
@@ -62,7 +63,7 @@ namespace LibMecha::LowLayer {
          * @param canRxFifo CAN受信FIFO
          * @return 受信データ
          */
-        std::array<std::uint8_t, 8> getMessage(std::uint8_t canRxFifo) const;
+        [[nodiscard]] std::array<std::uint8_t, 8> getMessage(std::uint8_t canRxFifo) const;
 
     private:
         /// HALのCANハンドル
@@ -72,4 +73,4 @@ namespace LibMecha::LowLayer {
     };
 } // namespace LibMecha::LowLayer
 
-#endif // _LIBMECHA_CAN_HH_
+#endif // LIBMECHA_CAN_HH_

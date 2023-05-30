@@ -1,5 +1,5 @@
 /*
- * MotorDriver.cc
+ * CanMotorDriver.cc
  *
  *  Created on: 2019/06/29
  *      Author: youda, ms0503
@@ -13,17 +13,18 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "LowLayer/MotorDriver.hh"
+#include "LowLayer/CanMotorDriver.hh"
+#include <algorithm>
 
 namespace LibMecha::LowLayer {
-    MotorDriver::MotorDriver(Can &can, std::uint8_t address):
+    CanMotorDriver::CanMotorDriver(Can &can, std::uint8_t address):
         _can(can), _address(address) {
     }
 
-    void MotorDriver::init() const {
+    void CanMotorDriver::init() {
     }
 
-    void MotorDriver::pidInit(const float kp, const float ki, const float kd, const std::uint32_t maxRpm, const std::uint32_t kppm) const {
+    void CanMotorDriver::pidInit(const float kp, const float ki, const float kd, const std::uint32_t maxRpm, const std::uint32_t kppm) const {
         while(!setParameter(DriveCommand::kSetParamP, kp))
             ;
         HAL_Delay(20);
@@ -41,48 +42,36 @@ namespace LibMecha::LowLayer {
         HAL_Delay(20);
     }
 
-    bool MotorDriver::setTargetRPM(const std::int32_t targetRpm) const {
-        const std::uint8_t sendDataArray[4] {
-            static_cast<std::uint8_t>(targetRpm >> 24),
-            static_cast<std::uint8_t>(targetRpm >> 16),
-            static_cast<std::uint8_t>(targetRpm >> 8),
-            static_cast<std::uint8_t>(targetRpm)
-        };
+    bool CanMotorDriver::setTargetRPM(std::int32_t targetRpm) const {
+        auto &sendDataArray = reinterpret_cast<std::uint8_t (&)[4]>(targetRpm);
+        std::reverse(sendDataArray, sendDataArray + 4);
 
         return updateDataSend(DriveCommand::kPID, sendDataArray);
     }
 
-    bool MotorDriver::setDuty(const std::int32_t duty) const {
-        const std::uint8_t sendDataArray[4] {
-            static_cast<std::uint8_t>(duty >> 24),
-            static_cast<std::uint8_t>(duty >> 16),
-            static_cast<std::uint8_t>(duty >> 8),
-            static_cast<std::uint8_t>(duty)
-        };
+    bool CanMotorDriver::setDuty(std::int32_t duty) {
+        auto &sendDataArray = reinterpret_cast<std::uint8_t (&)[4]>(duty);
+        std::reverse(sendDataArray, sendDataArray + 4);
 
         return updateDataSend(DriveCommand::kDuty, sendDataArray);
     }
 
-    bool MotorDriver::setParameter(const DriveCommand mode, const std::uint32_t uparamValue) const {
+    bool CanMotorDriver::setParameter(const DriveCommand mode, std::uint32_t uparamValue) const {
         if((mode == DriveCommand::kPID) || (mode == DriveCommand::kDuty) || (mode == DriveCommand::kEmergency)) return false;
-        const std::uint8_t sendDataArray[4] {
-            static_cast<std::uint8_t>(uparamValue >> 24),
-            static_cast<std::uint8_t>(uparamValue >> 16),
-            static_cast<std::uint8_t>(uparamValue >> 8),
-            static_cast<std::uint8_t>(uparamValue)
-        };
+        auto &sendDataArray = reinterpret_cast<std::uint8_t (&)[4]>(uparamValue);
+        std::reverse(sendDataArray, sendDataArray + 4);
 
         return updateDataSend(mode, sendDataArray);
     }
 
-    bool MotorDriver::emergency() const {
-        const std::uint8_t sendDataArray[4] {};
+    bool CanMotorDriver::emergency() const {
+        const std::uint8_t (&sendDataArray)[4] {};
 
         return updateDataSend(DriveCommand::kEmergency, sendDataArray);
     }
 
-    bool MotorDriver::updateDataSend(const DriveCommand cmd, const std::uint8_t sendData[4]) const {
-        std::array<std::uint8_t, 4 + 1> sendDataArray {
+    bool CanMotorDriver::updateDataSend(const DriveCommand cmd, const std::uint8_t (&sendData)[4]) const {
+        const std::uint8_t (&sendDataArray)[4 + 1] {
             static_cast<std::uint8_t>(cmd),
             sendData[0],
             sendData[1],
@@ -90,6 +79,6 @@ namespace LibMecha::LowLayer {
             sendData[3]
         };
 
-        return _can.send(_address, sendDataArray.data(), sendDataArray.size());
+        return _can.send(_address, sendDataArray);
     }
 } // namespace LibMecha::LowLayer

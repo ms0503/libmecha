@@ -1,5 +1,5 @@
 /*
-* Motor.cc
+* CanMotor.cc
 *
 *  Created on: 2023/03/07
 *      Author: ms0503
@@ -13,18 +13,18 @@
 *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "Motor.hh"
+#include "CanMotor.hh"
 
 namespace LibMecha {
-    std::int32_t Motor::_maxSpeed = 0;
+    std::int32_t CanMotor::_maxSpeed = 0;
 
-    Motor::Motor(CAN_HandleTypeDef &canHandle, LowLayer::Can &can, std::uint8_t address):
+    CanMotor::CanMotor(CAN_HandleTypeDef &canHandle, LowLayer::Can &can, std::uint8_t address):
         _hcan(canHandle), _can(can), _address(address), _md(can, address) {
     }
 
-    Motor::~Motor() = default;
+    CanMotor::~CanMotor() = default;
 
-    void Motor::init(const std::uint8_t canAddr, const std::int32_t maxSpeed) {
+    void CanMotor::init(const std::uint8_t canAddr, const std::int32_t maxSpeed) {
         _can.init(canAddr, CAN_IT_RX_FIFO1_MSG_PENDING);
         HAL_CAN_ActivateNotification(&_hcan, CAN_IT_RX_FIFO0_MSG_PENDING);
         _md.init();

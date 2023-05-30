@@ -59,12 +59,12 @@ namespace LibMecha::LowLayer {
         }
     }
 
-    bool Can::send(const std::uint8_t address, std::uint8_t *const sendData, const std::size_t sendDataSize) const {
-        if(sendDataSize == 0) return false;
+    template<std::size_t SIZE>
+    bool Can::send(const std::uint8_t address, const std::uint8_t (&sendData)[SIZE]) const {
         CAN_TxHeaderTypeDef canTxHeader;
         std::uint32_t mailBox;
         canTxHeader.StdId = address;
-        canTxHeader.DLC = sendDataSize;
+        canTxHeader.DLC = SIZE;
         canTxHeader.ExtId = 0x00;
         canTxHeader.RTR = CAN_RTR_DATA;
         canTxHeader.IDE = CAN_ID_STD;
