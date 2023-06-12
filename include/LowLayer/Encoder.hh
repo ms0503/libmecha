@@ -17,6 +17,7 @@
 
 #include "LowLayer/Peripheral.hh"
 #include "stm32f4xx_ll_tim.h"
+#include <cmath>
 #include <concepts>
 #include <cstdint>
 
@@ -26,28 +27,42 @@ namespace LibMecha::LowLayer {
     public:
         using Peripheral::Peripheral;
 
-        explicit Encoder(TIM_TypeDef *tim):
-            tim(tim) {
+        explicit Encoder(TIM_TypeDef *tim, std::uint16_t ppr):
+            _tim(tim), _ppr(ppr), _cpr(ppr * 4) {
         }
 
-        inline CNT_TYPE getRot() const {
-            return rot;
+        [[nodiscard]] inline CNT_TYPE getRot() const {
+            return _rot;
         }
 
-        inline CNT_TYPE getDeltaRot() const {
-            return deltaRot;
+        [[nodiscard]] inline CNT_TYPE getDeltaRot() const {
+            return _deltaRot;
+        }
+
+        [[nodiscard]] inline float getDegree() const {
+            return static_cast<float>(_rot) / static_cast<float>(_cpr) * 360.0f;
+        }
+
+        [[nodiscard]] inline float getRadian() const {
+            return static_cast<float>(_rot) / static_cast<float>(_cpr) * static_cast<float>(M_PI) * 2.0f;
+        }
+
+        [[nodiscard]] inline std::int16_t getRevolution() const {
+            return _deltaRot / _cpr;
         }
 
         inline void update() {
-            const CNT_TYPE tempRot = LL_TIM_GetCounter(tim);
-            deltaRot = reinterpret_cast<const CNT_TYPE &>(tempRot);
-            LL_TIM_SetCounter(tim, 0);
-            rot += deltaRot;
+            const CNT_TYPE tempRot = LL_TIM_GetCounter(_tim);
+            _deltaRot = reinterpret_cast<const CNT_TYPE &>(tempRot);
+            LL_TIM_SetCounter(_tim, 0);
+            _rot += _deltaRot;
         }
 
     private:
-        TIM_TypeDef *const tim;
-        CNT_TYPE rot;
-        CNT_TYPE deltaRot;
+        TIM_TypeDef *const _tim;
+        CNT_TYPE _rot;
+        CNT_TYPE _deltaRot;
+        std::uint16_t _ppr;
+        std::uint16_t _cpr;
     };
 }
