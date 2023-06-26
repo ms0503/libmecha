@@ -1,7 +1,7 @@
 /*
- * CytronMotorDriver.cc
+ * ISteering.cc
  *
- *  Created on: 23/05/23
+ *  Created on: 2023/05/22
  *      Author: ms0503
  *
  *  This file is part of libmecha.
@@ -13,17 +13,13 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_PERIPHERAL && !defined DISABLE_CYTRONMOTORDRIVER)
+#if (!defined DISABLE_LL && !defined DISABLE_MOTORDRIVER && !defined DISABLE_STEERING)
 
-#include "LowLayer/CytronMotorDriver.hh"
+#include "Steering/ISteering.hh"
+#include <cstdint>
 
-namespace LibMecha::LowLayer {
-    void CytronMotorDriver::init() {
-    }
-
-    bool CytronMotorDriver::setDuty(std::int32_t duty) {
-
-    }
+namespace LibMecha::Steering {
+    std::int32_t maxSpeed;
 }
 
-#endif // (!defined DISABLE_PERIPHERAL && !defined DISABLE_CYTRONMOTORDRIVER)
+#endif

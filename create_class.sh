@@ -27,8 +27,7 @@ cat <<EOF > "include/$1.hh"
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMECHA_${BASENAME^^}_HH_
-#define LIBMECHA_${BASENAME^^}_HH_
+#pragma once
 
 namespace LibMecha {
     class ${BASENAME} {
@@ -36,8 +35,6 @@ namespace LibMecha {
         ~${BASENAME}();
     };
 }
-
-#endif // LIBMECHA_${BASENAME^^}_HH_
 EOF
 cat <<EOF > "src/$1.cc"
 /*

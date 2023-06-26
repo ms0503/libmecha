@@ -1,7 +1,7 @@
 /*
- * IMotor.hh
+ * Encoder.cc
  *
- *  Created on: 2023/05/22
+ *  Created on: 2023/06/22
  *      Author: ms0503
  *
  *  This file is part of libmecha.
@@ -13,32 +13,23 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#if (!defined DISABLE_LL && !defined DISABLE_TIM && !defined DISABLE_PERIPHERAL && !defined DISABLE_ENCODER)
 
-#include "LowLayer/IMotorDriver.hh"
+#include "LowLayer/Encoder.hh"
+#include "stm32f4xx_ll_tim.h"
 #include <cstdint>
 
-namespace LibMecha {
-    /// モーターの最高速度
-    extern std::int32_t maxSpeed;
+namespace LibMecha::LowLayer {
+    Encoder::Encoder(TIM_TypeDef *tim, std::uint16_t ppr):
+        _tim(tim), _ppr(ppr), _cpr(ppr * 4) {
+    }
 
-    template<class MotorDriver>
-    class IMotor {
-    public:
-        /**
-         * デストラクタ
-         */
-        virtual ~IMotor() = 0;
-        /**
-         * モーター信号の更新
-         * @param duty モーター信号
-         */
-        virtual inline void update(const std::int32_t duty) const {
-            _md.setDuty(duty);
-        }
-
-    protected:
-        /// MotorDriverクラスのインスタンス
-        MotorDriver _md;
-    };
+    void Encoder::update() {
+        const std::uint16_t tempRot = LL_TIM_GetCounter(_tim);
+        _deltaRot = reinterpret_cast<const std::int16_t &>(tempRot);
+        LL_TIM_SetCounter(_tim, 0);
+        _rot += _deltaRot;
+    }
 }
+
+#endif

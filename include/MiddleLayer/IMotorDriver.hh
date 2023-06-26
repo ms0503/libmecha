@@ -15,23 +15,45 @@
 
 #pragma once
 
+#include "LowLayer/Encoder.hh"
 #include "LowLayer/Peripheral.hh"
 #include <cstdint>
 
-namespace LibMecha::LowLayer {
-    class IMotorDriver : public Peripheral {
+namespace LibMecha::MiddleLayer {
+    /// モータードライバーインターフェース
+    class IMotorDriver : public LowLayer::Peripheral {
     public:
         using Peripheral::Peripheral;
+
+        /**
+         * コンストラクター
+         * @param maxSpeed 最高速度
+         * @param encoder エンコーダー
+         */
+        explicit IMotorDriver(std::int32_t maxSpeed, LowLayer::Encoder &encoder);
 
         /**
          * 初期化
          */
         virtual void init() = 0;
+
         /**
          * Duty比の設定
-         * @param duty Duty比
+         * @param targetSpeed 目標速度
          * @return 設定完了
          */
-        virtual bool setDuty(std::int32_t duty) = 0;
+        virtual bool setTarget(std::int32_t targetSpeed) = 0;
+
+        /**
+         * 最高速度の取得
+         * @return 最高速度
+         */
+        [[nodiscard]] inline std::int32_t getMaxSpeed() const {
+            return _maxSpeed;
+        }
+
+    protected:
+        std::int32_t _maxSpeed;
+        LowLayer::Encoder _encoder;
     };
 }

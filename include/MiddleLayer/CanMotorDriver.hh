@@ -15,11 +15,13 @@
 
 #pragma once
 
-#include "Can.hh"
-#include "LowLayer/IMotorDriver.hh"
+#include "IMotorDriver.hh"
+#include "LowLayer/Can.hh"
+#include <array>
+#include <cstdint>
 
-namespace LibMecha::LowLayer {
-    /// メカトロ製モータードライバー用低レイヤークラス
+namespace LibMecha::MiddleLayer {
+    /// メカトロ製CANモータードライバー
     class CanMotorDriver : public IMotorDriver {
     public:
         using IMotorDriver::IMotorDriver;
@@ -45,12 +47,14 @@ namespace LibMecha::LowLayer {
         };
 
         /**
-         * コンストラクタ
+         * コンストラクター
          * @param can Canクラスのインスタンス
          * @param address CANアドレス
          */
-        explicit CanMotorDriver(Can &can, std::uint8_t address);
+        explicit CanMotorDriver(LowLayer::Can &can, std::uint8_t address);
+
         void init() override;
+
         /**
          * PID制御の初期化
          * @param kp Kp値
@@ -60,20 +64,24 @@ namespace LibMecha::LowLayer {
          * @param kppm 不明
          */
         void pidInit(float kp, float ki, float kd, std::uint32_t maxRpm, std::uint32_t kppm) const;
+
         /**
          * Canクラスのインスタンスの取得
          * @return Canクラスのインスタンス
          */
-        [[nodiscard]] inline Can &getCan() const {
+        [[nodiscard]] inline LowLayer::Can &getCan() const {
             return _can;
         }
+
         /**
          * ターゲット回転数の設定
          * @param targetRpm ターゲット回転数
          * @return 設定完了
          */
         bool setTargetRPM(std::int32_t targetRpm) const;
-        bool setDuty(std::int32_t duty) override;
+
+        bool setTarget(std::int32_t duty) override;
+
         /**
          * パラメータの設定
          * @param mode コマンド
@@ -83,6 +91,7 @@ namespace LibMecha::LowLayer {
         inline bool setParameter(DriveCommand cmd, float fparamValue) const {
             return setParameter(cmd, *reinterpret_cast<std::uint32_t *>(&fparamValue));
         }
+
         /**
          * パラメータの設定
          * @param mode コマンド
@@ -90,6 +99,7 @@ namespace LibMecha::LowLayer {
          * @return 設定完了
          */
         bool setParameter(DriveCommand cmd, std::uint32_t uparamValue) const;
+
         /**
          * 非常停止信号の送信
          * @return 送信完了
@@ -98,7 +108,7 @@ namespace LibMecha::LowLayer {
 
     private:
         /// Canクラスのインスタンス
-        Can &_can;
+        LowLayer::Can &_can;
         /// CANアドレス
         std::uint8_t _address;
 
@@ -117,8 +127,7 @@ namespace LibMecha::LowLayer {
          * @return
          */
         inline bool updateDataSend(DriveCommand cmd, const std::array<std::uint8_t, 4> (&sendData)) const {
-            const std::uint8_t (&sendDataArray)[4 + 1] {
-                static_cast<std::uint8_t>(cmd),
+            const std::uint8_t (&sendDataArray)[4] {
                 sendData.at(0),
                 sendData.at(1),
                 sendData.at(2),

@@ -19,29 +19,31 @@
 #include "stm32f4xx_hal.h"
 #include <array>
 #include <cstdint>
-#include <vector>
 
 namespace LibMecha::LowLayer {
-    /// CAN通信用低レイヤークラス
+    /// CANノード
     class Can : public Peripheral {
     public:
         using Peripheral::Peripheral;
 
         /**
-         * コンストラクタ
+         * コンストラクター
          * @param canHandle HALのCANハンドル
          */
         explicit Can(CAN_HandleTypeDef &canHandle);
+
         /**
          * CANのフィルターの設定
          * @param address CANアドレス
          */
         void setFilter(std::uint8_t address) const;
+
         /**
          * リモートへデータの送信
          * @param address リモートCANアドレス
          */
         void sendRemote(std::uint8_t address) const;
+
         /**
          * データの送信
          * @tparam SIZE 送信データサイズ
@@ -49,14 +51,15 @@ namespace LibMecha::LowLayer {
          * @param sendData 送信データ
          * @return 送信完了
          */
-        template<std::size_t SIZE>
-        bool send(std::uint8_t address, const std::uint8_t (&sendData)[SIZE]) const;
+        template<std::size_t SIZE> bool send(std::uint8_t address, const std::uint8_t (&sendData)[SIZE]) const;
+
         /**
          * 初期化
          * @param address 自身のCANアドレス
          * @param receiveInterrupt 受信割り込み
          */
         void init(std::uint8_t address, std::uint32_t receiveInterrupt);
+
         /**
          * メッセージの受信
          * @param canRxFifo CAN受信FIFO

@@ -15,16 +15,17 @@
 
 #if (!defined DISABLE_LL && !defined DISABLE_PERIPHERAL && !defined DISABLE_USART && !defined DISABLE_SBDBT)
 
-#include "LowLayer/SBDBT.hh"
-#include "Utils.hh"
+#include "MiddleLayer/SBDBT.hh"
+#include <array>
+#include <cstdint>
 #include <numeric>
 
-namespace LibMecha::LowLayer {
+namespace LibMecha::MiddleLayer {
     SBDBT::SBDBT():
         _lastButtonState(), _processedReceiveData() {
     }
 
-    bool SBDBT::receiveCheck(const std::array<std::uint8_t, SBDBT_RECEIVE_SIZE> receiveData) {
+    bool SBDBT::receiveCheck(std::array<std::uint8_t, SBDBT_RECEIVE_SIZE> &receiveData) {
         std::array<std::uint8_t, SBDBT_RECEIVE_SIZE> processedReceiveData {};
         std::uint8_t b;
         std::uint8_t checksum;
@@ -52,16 +53,14 @@ namespace LibMecha::LowLayer {
         return false;
     }
 
-    SBDBT::ButtonAssignment SBDBT::receiveProcessing() {
-        ButtonAssignment button {};
-        std::uint16_t receiveData;
+    void SBDBT::receiveProcessing(SBDBT::ButtonAssignment &button) {
         _as = {
-            .RX = static_cast<std::int8_t>(_processedReceiveData.at(5) - 0b0100'0000),
-            .RY = static_cast<std::int8_t>(_processedReceiveData.at(6) - 0b0100'0000),
             .LX = static_cast<std::int8_t>(_processedReceiveData.at(3) - 0b0100'0000),
-            .LY = static_cast<std::int8_t>(_processedReceiveData.at(4) - 0b0100'0000)
+            .LY = static_cast<std::int8_t>(_processedReceiveData.at(4) - 0b0100'0000),
+            .RX = static_cast<std::int8_t>(_processedReceiveData.at(5) - 0b0100'0000),
+            .RY = static_cast<std::int8_t>(_processedReceiveData.at(6) - 0b0100'0000)
         };
-        receiveData = (_processedReceiveData.at(1) << 8) + _processedReceiveData.at(2);
+        std::uint16_t receiveData = (_processedReceiveData.at(1) << 8) + _processedReceiveData.at(2);
         button.Up = identifyButtonState(_lastButtonState.Up, (receiveData & kButtonUp) != 0);
         button.Down = identifyButtonState(_lastButtonState.Down, (receiveData & kButtonDown) != 0);
         button.Right = identifyButtonState(_lastButtonState.Right, (receiveData & kButtonRight) != 0);
@@ -79,12 +78,9 @@ namespace LibMecha::LowLayer {
         button.Start = identifyButtonState(_lastButtonState.Start, (receiveData & kButtonStart) != 0);
         button.Select = identifyButtonState(_lastButtonState.Select, (receiveData & kButtonSelect) != 0);
         _lastButtonState = button;
-
-        return button;
     }
 
-    SBDBT::ButtonAssignment SBDBT::buttonAssignmentInit() {
-        ButtonAssignment ba {};
+    void SBDBT::buttonAssignmentInit(SBDBT::ButtonAssignment &ba) {
         ba.Up = SBDBT::ButtonState::kRelease;
         ba.Down = SBDBT::ButtonState::kRelease;
         ba.Right = SBDBT::ButtonState::kRelease;
@@ -101,11 +97,9 @@ namespace LibMecha::LowLayer {
         ba.R3 = SBDBT::ButtonState::kRelease;
         ba.Start = SBDBT::ButtonState::kRelease;
         ba.Select = SBDBT::ButtonState::kRelease;
-
-        return ba;
     }
 
-    SBDBT::ButtonState SBDBT::identifyButtonState(const ButtonState lastButtonState, const bool isPush) {
+    SBDBT::ButtonState SBDBT::identifyButtonState(ButtonState &lastButtonState, const bool isPush) {
         if(lastButtonState == ButtonState::kPush || lastButtonState == ButtonState::kPushEdge) {
             if(isPush) return ButtonState::kPush;
             return ButtonState::kReleaseEdge;
@@ -115,4 +109,4 @@ namespace LibMecha::LowLayer {
     }
 } // namespace LibMecha::LowLayer
 
-#endif // (!defined DISABLE_LL && !defined DISABLE_PERIPHERAL && !defined DISABLE_USART && !defined DISABLE_SBDBT)
+#endif

@@ -15,23 +15,22 @@
 
 #pragma once
 
-#include "LowLayer/SBDBT.h"
-#include "Peripheral.hh"
+#include "LowLayer/Peripheral.hh"
+#include "SBDBT.h"
 #include "stm32f4xx_ll_usart.h"
 #include <array>
 #include <cstdint>
-#include <cstring>
 
-namespace LibMecha::LowLayer {
+namespace LibMecha::MiddleLayer {
     /// SBDBTのデータサイズ
     constexpr const std::uint16_t SBDBT_RECEIVE_SIZE = C_SBDBT_RECEIVE_SIZE;
 
-    /// SBDBT用低レイヤークラス
-    class SBDBT : public Peripheral {
+    /// SBDBT
+    class SBDBT : public LowLayer::Peripheral {
     public:
         using Peripheral::Peripheral;
 
-        /// ボタンの状態
+        /// ボタン状態
         enum class ButtonState {
             /// 押された瞬間
             kPushEdge,
@@ -79,37 +78,40 @@ namespace LibMecha::LowLayer {
             ButtonState Select;
         };
 
-        /// アナログスティックの状態
+        /// アナログスティック状態
         struct AnalogState {
-            /// 右スティック横軸
-            std::int8_t RX = 0;
-            /// 右スティック縦軸
-            std::int8_t RY = 0;
-            /// 左スティック横軸
+            /// 左スティック横軸(→)
             std::int8_t LX = 0;
-            /// 左スティック縦軸
+            /// 左スティック縦軸(↑)
             std::int8_t LY = 0;
+            /// 右スティック横軸(→)
+            std::int8_t RX = 0;
+            /// 右スティック縦軸(↑)
+            std::int8_t RY = 0;
         };
 
         /**
-         * コンストラクタ
+         * コンストラクター
          */
         explicit SBDBT();
+
         /**
-         * アナログスティックの状態の取得
-         * @return アナログスティックの状態
+         * アナログスティック状態の取得
+         * @return アナログスティック状態
          */
-        [[nodiscard]] inline AnalogState getAnalogState() const {
+        [[nodiscard]] inline AnalogState &getAnalogState() {
             return _as;
         }
+
         /**
          * 初期化
          */
         inline void init() {
-            _lastButtonState = buttonAssignmentInit();
-            _as = { .RX = 0, .RY = 0, .LX = 0, .LY = 0 };
+            buttonAssignmentInit(_lastButtonState);
+            _as = { .LX = 0, .LY = 0, .RX = 0, .RY = 0 };
             for(std::uint8_t &i : _processedReceiveData) i = 0;
         }
+
         /**
          * 受信データのバリデーション
          * @param receiveData 受信データ
@@ -120,22 +122,25 @@ namespace LibMecha::LowLayer {
             std::copy(receiveData, receiveData + SBDBT_RECEIVE_SIZE, receiveData1.begin());
             return receiveCheck(receiveData1);
         }
+
         /**
          * 受信データのバリデーション
          * @param receiveData 受信データ
          * @return 受信データが有効か
          */
-        bool receiveCheck(std::array<std::uint8_t, SBDBT_RECEIVE_SIZE> receiveData);
+        bool receiveCheck(std::array<std::uint8_t, SBDBT_RECEIVE_SIZE> &receiveData);
+
         /**
          * データを受信しボタン入力へ変換
-         * @return ボタン入力
+         * @param button ボタン入力
          */
-        ButtonAssignment receiveProcessing();
+        void receiveProcessing(ButtonAssignment &button);
+
         /**
          * ボタンアサインの初期化
-         * @return ボタンアサイン
+         * @param ba ボタンアサイン
          */
-        static ButtonAssignment buttonAssignmentInit();
+        static void buttonAssignmentInit(ButtonAssignment &ba);
 
     private:
         /// 開始バイト
@@ -189,6 +194,6 @@ namespace LibMecha::LowLayer {
          * @param isPush 押されているか
          * @return ボタンの状態
          */
-        static ButtonState identifyButtonState(ButtonState lastButtonState, bool isPush);
+        static ButtonState identifyButtonState(ButtonState &lastButtonState, bool isPush);
     };
 } // namespace LibMecha::LowLayer

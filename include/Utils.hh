@@ -15,17 +15,5 @@
 
 #pragma once
 
-namespace LibMecha {
-    /// ユーティリティクラス
-    class Utils {
-    public:
-        /**
-         * コンストラクタ
-         */
-        explicit Utils();
-        /**
-         * デストラクタ
-         */
-        ~Utils();
-    };
-} // namespace LibMecha
+namespace LibMecha::Utils {
+} // namespace LibMecha::Utils

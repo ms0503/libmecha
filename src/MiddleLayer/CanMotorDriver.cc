@@ -13,13 +13,15 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_HAL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN && !defined DISABLE_CANMOTORDRIVER)
+#if (!defined DISABLE_HAL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN && !defined DISABLE_MOTORDRIVER && !defined DISABLE_CANMOTORDRIVER)
 
-#include "LowLayer/CanMotorDriver.hh"
+#include "LowLayer/Can.hh"
+#include "MiddleLayer/CanMotorDriver.hh"
 #include <algorithm>
+#include <cstdint>
 
-namespace LibMecha::LowLayer {
-    CanMotorDriver::CanMotorDriver(Can &can, std::uint8_t address):
+namespace LibMecha::MiddleLayer {
+    CanMotorDriver::CanMotorDriver(LowLayer::Can &can, std::uint8_t address):
         _can(can), _address(address) {
     }
 
@@ -27,20 +29,15 @@ namespace LibMecha::LowLayer {
     }
 
     void CanMotorDriver::pidInit(const float kp, const float ki, const float kd, const std::uint32_t maxRpm, const std::uint32_t kppm) const {
-        while(!setParameter(DriveCommand::kSetParamP, kp))
-            ;
+        while(!setParameter(DriveCommand::kSetParamP, kp));
         HAL_Delay(20);
-        while(!setParameter(DriveCommand::kSetParamI, ki))
-            ;
+        while(!setParameter(DriveCommand::kSetParamI, ki));
         HAL_Delay(20);
-        while(!setParameter(DriveCommand::kSetParamD, kd))
-            ;
+        while(!setParameter(DriveCommand::kSetParamD, kd));
         HAL_Delay(20);
-        while(!setParameter(DriveCommand::kSetParamLIMIT, maxRpm))
-            ;
+        while(!setParameter(DriveCommand::kSetParamLIMIT, maxRpm));
         HAL_Delay(20);
-        while(!setParameter(DriveCommand::kSetParamPPM, kppm))
-            ;
+        while(!setParameter(DriveCommand::kSetParamPPM, kppm));
         HAL_Delay(20);
     }
 
@@ -51,8 +48,8 @@ namespace LibMecha::LowLayer {
         return updateDataSend(DriveCommand::kPID, sendDataArray);
     }
 
-    bool CanMotorDriver::setDuty(std::int32_t duty) {
-        auto &sendDataArray = reinterpret_cast<std::uint8_t (&)[4]>(duty);
+    bool CanMotorDriver::setTarget(std::int32_t targetPps) {
+        auto &sendDataArray = reinterpret_cast<std::uint8_t (&)[4]>(targetPps);
         std::reverse(sendDataArray, sendDataArray + 4);
 
         return updateDataSend(DriveCommand::kDuty, sendDataArray);
@@ -85,4 +82,4 @@ namespace LibMecha::LowLayer {
     }
 } // namespace LibMecha::LowLayer
 
-#endif // (!defined DISABLE_HAL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN && !defined DISABLE_CANMOTORDRIVER)
+#endif

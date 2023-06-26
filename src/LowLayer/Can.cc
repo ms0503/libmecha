@@ -16,7 +16,9 @@
 #if (!defined DISABLE_HAL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN)
 
 #include "LowLayer/Can.hh"
-#include "Utils.hh"
+#include "stm32f4xx_hal.h"
+#include <array>
+#include <cstdint>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"
@@ -61,8 +63,7 @@ namespace LibMecha::LowLayer {
         }
     }
 
-    template<std::size_t SIZE>
-    bool Can::send(const std::uint8_t address, const std::uint8_t (&sendData)[SIZE]) const {
+    template<std::size_t SIZE> bool Can::send(const std::uint8_t address, const std::uint8_t (&sendData)[SIZE]) const {
         CAN_TxHeaderTypeDef canTxHeader;
         std::uint32_t mailBox;
         canTxHeader.StdId = address;
@@ -72,8 +73,7 @@ namespace LibMecha::LowLayer {
         canTxHeader.IDE = CAN_ID_STD;
         canTxHeader.TransmitGlobalTime = DISABLE;
 
-        while(!HAL_CAN_GetTxMailboxesFreeLevel(&_hcan))
-            ;
+        while(!HAL_CAN_GetTxMailboxesFreeLevel(&_hcan));
         if(HAL_CAN_AddTxMessage(&_hcan, &canTxHeader, sendData, &mailBox) != HAL_OK) {
             HAL_CAN_AbortTxRequest(&_hcan, mailBox);
             if(HAL_CAN_AddTxMessage(&_hcan, &canTxHeader, sendData, &mailBox) != HAL_OK) {
@@ -104,4 +104,4 @@ namespace LibMecha::LowLayer {
 
 #pragma clang diagnostic pop
 
-#endif // (!defined DISABLE_HAL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN)
+#endif

@@ -15,54 +15,103 @@
 
 #pragma once
 
-#include "LowLayer/Peripheral.hh"
+#include "Peripheral.hh"
 #include "stm32f4xx_ll_tim.h"
 #include <cmath>
-#include <concepts>
 #include <cstdint>
 
 namespace LibMecha::LowLayer {
-    template<std::integral CNT_TYPE>
+    /// エンコーダー
     class Encoder : public Peripheral {
     public:
         using Peripheral::Peripheral;
 
-        explicit Encoder(TIM_TypeDef *tim, std::uint16_t ppr):
-            _tim(tim), _ppr(ppr), _cpr(ppr * 4) {
-        }
+        /**
+         * コンストラクター
+         * @param tim タイマー
+         * @param ppr パルス毎回転(分解能)
+         */
+        explicit Encoder(TIM_TypeDef *tim, std::uint16_t ppr);
 
-        [[nodiscard]] inline CNT_TYPE getRot() const {
+        /**
+         * 累計カウントの取得
+         * @return 累計カウント
+         */
+        [[nodiscard]] inline std::int16_t getRot() const {
             return _rot;
         }
 
-        [[nodiscard]] inline CNT_TYPE getDeltaRot() const {
+        /**
+         * 差分カウントの取得
+         * @return 差分カウント
+         */
+        [[nodiscard]] inline std::int16_t getDeltaRot() const {
             return _deltaRot;
         }
 
+        /**
+         * 累計角度の取得
+         * @return 累計角度[deg]
+         */
         [[nodiscard]] inline float getDegree() const {
             return static_cast<float>(_rot) / static_cast<float>(_cpr) * 360.0f;
         }
 
+        /**
+         * 差分角度の取得
+         * @return 差分角度[deg]
+         */
+        [[nodiscard]] inline float getDeltaDegree() const {
+            return static_cast<float>(_deltaRot) / static_cast<float>(_cpr) * 360.0f;
+        }
+
+        /**
+         * 累計角度の取得
+         * @return 累計角度[rad]
+         */
         [[nodiscard]] inline float getRadian() const {
             return static_cast<float>(_rot) / static_cast<float>(_cpr) * static_cast<float>(M_PI) * 2.0f;
         }
 
+        /**
+         * 差分角度の取得
+         * @return 差分角度[rad]
+         */
+        [[nodiscard]] inline float getDeltaRadian() const {
+            return static_cast<float>(_deltaRot) / static_cast<float>(_cpr) * static_cast<float>(M_PI) * 2.0f;
+        }
+
+        /**
+         * 累計回転数の取得
+         * @return 累計回転数
+         */
         [[nodiscard]] inline std::int16_t getRevolution() const {
+            return _rot / _cpr;
+        }
+
+        /**
+         * 差分回転数の取得
+         * @return 差分回転数
+         */
+        [[nodiscard]] inline std::int16_t getDeltaRevolution() const {
             return _deltaRot / _cpr;
         }
 
-        inline void update() {
-            const CNT_TYPE tempRot = LL_TIM_GetCounter(_tim);
-            _deltaRot = reinterpret_cast<const CNT_TYPE &>(tempRot);
-            LL_TIM_SetCounter(_tim, 0);
-            _rot += _deltaRot;
-        }
+        /**
+         * 値の更新
+         */
+        void update();
 
     private:
+        /// タイマー
         TIM_TypeDef *const _tim;
-        CNT_TYPE _rot;
-        CNT_TYPE _deltaRot;
+        /// 累計カウンター
+        std::int16_t _rot = 0;
+        /// 差分カウンター
+        std::int16_t _deltaRot = 0;
+        /// パルス毎回転(分解能)
         std::uint16_t _ppr;
+        /// カウント毎回転
         std::uint16_t _cpr;
     };
 }

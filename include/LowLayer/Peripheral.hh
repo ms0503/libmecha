@@ -16,15 +16,16 @@
 #pragma once
 
 namespace LibMecha::LowLayer {
-    /// ペリフェラル識別用ベースクラス
+    /// ペリフェラル
     class Peripheral {
     public:
         /**
-         * コンストラクタ
+         * コンストラクター
          */
         explicit Peripheral();
+
         /**
-         * デストラクタ
+         * デストラクター
          */
         virtual ~Peripheral();
     };

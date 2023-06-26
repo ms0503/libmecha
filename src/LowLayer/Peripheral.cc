@@ -22,4 +22,4 @@ namespace LibMecha::LowLayer {
     Peripheral::~Peripheral() = default;
 } // namespace LibMecha::LowLayer
 
-#endif // (!defined DISABLE_PERIPHERAL)
+#endif

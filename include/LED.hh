@@ -16,16 +16,26 @@
 #pragma once
 
 #include "LowLayer/GPIO.hh"
+#include <cstddef>
 
 namespace LibMecha {
+    /// LED
     class LED : public LowLayer::GPIO {
     public:
         using LowLayer::GPIO::GPIO;
 
+        /**
+         * 点灯
+         * @param index ピン配列のインデックス
+         */
         inline void on(const std::size_t index) {
             high(index);
         }
 
+        /**
+         * 消灯
+         * @param index ピン配列のインデックス
+         */
         inline void off(const std::size_t index) {
             low(index);
         }

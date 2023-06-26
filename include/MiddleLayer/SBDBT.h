@@ -1,7 +1,7 @@
 /*
- * IMotor.cc
+ * SBDBT.h
  *
- *  Created on: 2023/05/22
+ *  Created on: 2023/03/15
  *      Author: ms0503
  *
  *  This file is part of libmecha.
@@ -13,8 +13,17 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <cstdint>
+#pragma once
 
-namespace LibMecha {
-    std::int32_t maxSpeed;
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdint.h>
+
+/// SBDBTのデータサイズ
+#define C_SBDBT_RECEIVE_SIZE ((uint16_t)8)
+
+#ifdef __cplusplus
 }
+#endif
