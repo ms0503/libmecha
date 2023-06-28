@@ -25,8 +25,8 @@ namespace LibMecha::LowLayer {
     }
 
     void Encoder::update() {
-        const std::uint16_t tempRot = LL_TIM_GetCounter(_tim);
-        _deltaRot = reinterpret_cast<const std::int16_t &>(tempRot);
+        const std::uint32_t tempRot = LL_TIM_GetCounter(_tim);
+        _deltaRot = reinterpret_cast<const std::int32_t &>(tempRot);
         LL_TIM_SetCounter(_tim, 0);
         _rot += _deltaRot;
     }

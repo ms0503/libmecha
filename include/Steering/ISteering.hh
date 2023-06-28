@@ -17,7 +17,6 @@
 
 #include "Controller.hh"
 #include "MiddleLayer/IMotorDriver.hh"
-#include <concepts>
 #include <cstdint>
 #include <vector>
 
@@ -27,25 +26,24 @@ namespace LibMecha::Steering {
 
     /**
      * 足回りインターフェース
-     * @tparam MotorDriver モータードライバー
      */
-    template<class MotorDriver> requires std::derived_from<MotorDriver, LowLayer::IMotorDriver> class ISteering {
+    class ISteering {
     public:
         /**
          * コンストラクター
          */
-        explicit ISteering() = 0;
+        explicit ISteering();
 
         /**
          * デストラクター
          */
-        virtual ~ISteering() = 0;
+        virtual ~ISteering();
 
         /**
          * 初期化
          */
         virtual inline void init() {
-            _md.init();
+            for(auto md : _md) md.init();
         }
 
         /**
@@ -53,7 +51,7 @@ namespace LibMecha::Steering {
          * @param index モータードライバー配列のインデックス
          * @param target 目標パルス毎秒
          */
-        virtual inline void update(const std::size_t index, const std::int32_t target) const {
+        virtual inline void update(const std::size_t index, const std::int32_t target) {
             _md.at(index).setTarget(target);
         }
 
@@ -62,46 +60,46 @@ namespace LibMecha::Steering {
          * @param r 動径
          * @param theta 偏角
          */
-        virtual void polarInput(float r, LibMecha::Controller<ISteering>::StickTheta theta) const = 0;
+        virtual void polarInput(float r, LibMecha::Controller::StickTheta theta);
 
         /**
          * 前進
          * @param speed 速度
          */
-        virtual void forward(std::int32_t speed) const = 0;
+        virtual void forward(std::int32_t speed);
 
         /**
          * 後退
          * @param speed 速度
          */
-        virtual void backward(std::int32_t speed) const = 0;
+        virtual void backward(std::int32_t speed);
 
         /**
          * 左平行移動
          * @param speed 速度
          */
-        virtual void left(std::int32_t speed) const = 0;
+        virtual void left(std::int32_t speed);
 
         /**
          * 右平行移動
          * @param speed 速度
          */
-        virtual void right(std::int32_t speed) const = 0;
+        virtual void right(std::int32_t speed);
 
         /**
          * 左回転
          * @param speed 速度
          */
-        virtual void turnLeft(std::int32_t speed) const = 0;
+        virtual void turnLeft(std::int32_t speed);
 
         /**
          * 右回転
          * @param speed 速度
          */
-        virtual void turnRight(std::int32_t speed) const = 0;
+        virtual void turnRight(std::int32_t speed);
 
     protected:
         /// モータードライバー配列
-        const std::vector<MotorDriver> _md {};
+        std::vector<MiddleLayer::IMotorDriver> _md {};
     };
 }

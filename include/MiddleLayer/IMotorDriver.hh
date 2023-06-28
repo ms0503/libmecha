@@ -30,19 +30,19 @@ namespace LibMecha::MiddleLayer {
          * @param maxSpeed 最高速度
          * @param encoder エンコーダー
          */
-        explicit IMotorDriver(std::int32_t maxSpeed, LowLayer::Encoder &encoder);
+        explicit IMotorDriver(std::int32_t maxSpeed, LowLayer::Encoder encoder);
 
         /**
          * 初期化
          */
-        virtual void init() = 0;
+        virtual void init();
 
         /**
          * Duty比の設定
          * @param targetSpeed 目標速度
          * @return 設定完了
          */
-        virtual bool setTarget(std::int32_t targetSpeed) = 0;
+        virtual bool setTarget(std::int32_t targetSpeed);
 
         /**
          * 最高速度の取得

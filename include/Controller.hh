@@ -15,7 +15,9 @@
 
 #pragma once
 
+#include "MiddleLayer/IMotorDriver.hh"
 #include "MiddleLayer/SBDBT.hh"
+#include "Steering/ISteering.hh"
 #include <array>
 #include <cmath>
 #include <cstdint>
@@ -27,8 +29,10 @@ namespace LibMecha {
     /// スティック入力の最大値
     constexpr const std::int8_t STICK_MAX = 63;
 
-    /// コントローラー
-    template<class Steering> class Controller {
+    /**
+     * コントローラー
+     */
+    class Controller {
     public:
         /// スティックの角度(右0・反時計回り・rad・-π < x <= π)
         struct StickTheta {
@@ -41,7 +45,7 @@ namespace LibMecha {
         /**
          * コンストラクター
          */
-        explicit Controller(LowLayer::SBDBT &sbdbt);
+        explicit Controller(MiddleLayer::SBDBT sbdbt, const Steering::ISteering &steering);
 
         /**
          * デストラクター
@@ -52,8 +56,8 @@ namespace LibMecha {
          * スティック入力の取得
          * @return スティック入力
          */
-        [[nodiscard]] inline LowLayer::SBDBT::AnalogState getStick() {
-            const LowLayer::SBDBT::AnalogState &as = _sbdbt.getAnalogState();
+        [[nodiscard]] inline MiddleLayer::SBDBT::AnalogState getStick() {
+            const MiddleLayer::SBDBT::AnalogState &as = _sbdbt.getAnalogState();
             return {
                 .LX = _deadZones.at(0) < std::abs(as.LX) ? as.LX : static_cast<std::int8_t>(0),
                 .LY = _deadZones.at(1) < std::abs(as.LY) ? as.LY : static_cast<std::int8_t>(0),
@@ -65,7 +69,7 @@ namespace LibMecha {
         /**
          * スティック入力を基にしたモーター信号の生成
          */
-        void stickToSteering() const;
+        void stickToSteering();
 
         /**
          * 初期化
@@ -91,8 +95,8 @@ namespace LibMecha {
          * @param button ボタン
          * @return 押されているか
          */
-        static inline bool isPush(LowLayer::SBDBT::ButtonState button) {
-            return button == LowLayer::SBDBT::ButtonState::kPush;
+        static inline bool isPush(MiddleLayer::SBDBT::ButtonState button) {
+            return button == MiddleLayer::SBDBT::ButtonState::kPush;
         }
 
         /**
@@ -100,8 +104,8 @@ namespace LibMecha {
          * @param button ボタン
          * @return 押された瞬間か
          */
-        static inline bool isPushEdge(LowLayer::SBDBT::ButtonState button) {
-            return button == LowLayer::SBDBT::ButtonState::kPushEdge;
+        static inline bool isPushEdge(MiddleLayer::SBDBT::ButtonState button) {
+            return button == MiddleLayer::SBDBT::ButtonState::kPushEdge;
         }
 
         /**
@@ -109,8 +113,8 @@ namespace LibMecha {
          * @param button ボタン
          * @return 離れているか
          */
-        static inline bool isRelease(LowLayer::SBDBT::ButtonState button) {
-            return button == LowLayer::SBDBT::ButtonState::kRelease;
+        static inline bool isRelease(MiddleLayer::SBDBT::ButtonState button) {
+            return button == MiddleLayer::SBDBT::ButtonState::kRelease;
         }
 
         /**
@@ -118,8 +122,8 @@ namespace LibMecha {
          * @param button ボタン
          * @return 離された瞬間か
          */
-        static inline bool isReleaseEdge(LowLayer::SBDBT::ButtonState button) {
-            return button == LowLayer::SBDBT::ButtonState::kReleaseEdge;
+        static inline bool isReleaseEdge(MiddleLayer::SBDBT::ButtonState button) {
+            return button == MiddleLayer::SBDBT::ButtonState::kReleaseEdge;
         }
 
         /**
@@ -127,9 +131,9 @@ namespace LibMecha {
          * @param receiveData 受信データ
          * @return 妥当であるか
          */
-        inline bool receiveCheck(const std::uint8_t (&receiveData)[LowLayer::SBDBT_RECEIVE_SIZE]) {
-            std::array<std::uint8_t, LowLayer::SBDBT_RECEIVE_SIZE> receiveData1 {};
-            std::copy(receiveData, receiveData + LowLayer::SBDBT_RECEIVE_SIZE, receiveData1.begin());
+        inline bool receiveCheck(const std::uint8_t (&receiveData)[MiddleLayer::SBDBT_RECEIVE_SIZE]) {
+            std::array<std::uint8_t, MiddleLayer::SBDBT_RECEIVE_SIZE> receiveData1 {};
+            std::copy(receiveData, receiveData + MiddleLayer::SBDBT_RECEIVE_SIZE, receiveData1.begin());
 
             return receiveCheck(receiveData1);
         }
@@ -139,7 +143,7 @@ namespace LibMecha {
          * @param receiveData 受信データ
          * @return 妥当であるか
          */
-        inline bool receiveCheck(std::array<std::uint8_t, LowLayer::SBDBT_RECEIVE_SIZE> &receiveData) {
+        inline bool receiveCheck(std::array<std::uint8_t, MiddleLayer::SBDBT_RECEIVE_SIZE> &receiveData) {
             return _sbdbt.receiveCheck(receiveData);
         }
 
@@ -148,9 +152,9 @@ namespace LibMecha {
          * @param receiveData 受信データ
          * @return ボタンアサイン
          */
-        inline LowLayer::SBDBT::ButtonAssignment &receiveProcessing(const std::uint8_t (&receiveData)[LowLayer::SBDBT_RECEIVE_SIZE]) {
-            std::array<std::uint8_t, LowLayer::SBDBT_RECEIVE_SIZE> receiveData1 {};
-            std::copy(receiveData, receiveData + LowLayer::SBDBT_RECEIVE_SIZE, receiveData1.begin());
+        inline MiddleLayer::SBDBT::ButtonAssignment &receiveProcessing(const std::uint8_t (&receiveData)[MiddleLayer::SBDBT_RECEIVE_SIZE]) {
+            std::array<std::uint8_t, MiddleLayer::SBDBT_RECEIVE_SIZE> receiveData1 {};
+            std::copy(receiveData, receiveData + MiddleLayer::SBDBT_RECEIVE_SIZE, receiveData1.begin());
 
             return receiveProcessing(receiveData1);
         }
@@ -160,7 +164,7 @@ namespace LibMecha {
          * @param receiveData 受信データ
          * @return ボタンアサイン
          */
-        inline LowLayer::SBDBT::ButtonAssignment &receiveProcessing(std::array<std::uint8_t, LowLayer::SBDBT_RECEIVE_SIZE> &receiveData) {
+        inline MiddleLayer::SBDBT::ButtonAssignment &receiveProcessing(std::array<std::uint8_t, MiddleLayer::SBDBT_RECEIVE_SIZE> &receiveData) {
             if(_sbdbt.receiveCheck(receiveData)) _sbdbt.receiveProcessing(_bs);
             return _bs;
         }
@@ -190,21 +194,21 @@ namespace LibMecha {
         }
 
     private:
-        /// SBDBTクラスのインスタンス
-        LowLayer::SBDBT &_sbdbt;
+        /// SBDBT
+        MiddleLayer::SBDBT _sbdbt;
         /// ボタンアサイン
-        LowLayer::SBDBT::ButtonAssignment _bs;
+        MiddleLayer::SBDBT::ButtonAssignment _bs;
         /// スティックのデッドゾーン
         std::array<std::int32_t, 4> _deadZones;
         /// 足回り
-        const Steering &_steering;
+        Steering::ISteering _steering;
 
         /**
          * 左右スティック入力による各角度の導出
          * @return 左右スティックの角度(rad)
          */
-        [[nodiscard]] inline StickTheta sticksToTheta() const {
-            const LowLayer::SBDBT::AnalogState &as = _sbdbt.getAnalogState();
+        [[nodiscard]] inline StickTheta sticksToTheta() {
+            const MiddleLayer::SBDBT::AnalogState &as = _sbdbt.getAnalogState();
             return {
                 .left = std::atan2(_deadZones.at(1) < std::abs(as.LY) ? static_cast<float>(as.LY) : 0.0f, _deadZones.at(0) < std::abs(as.LX) ? static_cast<float>(as.LX) : 0.0f),
                 .right = std::atan2(_deadZones.at(3) < std::abs(as.RY) ? static_cast<float>(as.RY) : 0.0f, _deadZones.at(2) < std::abs(as.RX) ? static_cast<float>(as.RX) : 0.0f)

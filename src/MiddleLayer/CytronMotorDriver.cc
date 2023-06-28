@@ -22,10 +22,11 @@
 #include "stm32f4xx_ll_tim.h"
 #include <cmath>
 #include <cstdint>
+#include <utility>
 
 namespace LibMecha::MiddleLayer {
-    CytronMotorDriver::CytronMotorDriver(const std::int32_t maxSpeed, LowLayer::Encoder &encoder, TIM_TypeDef *const tim, const std::uint32_t timCh, LowLayer::GPIO::Pin &dirPin):
-        IMotorDriver(maxSpeed, encoder), _tim(tim), _timCh(timCh), _dir(dirPin) {
+    CytronMotorDriver::CytronMotorDriver(const std::int32_t maxSpeed, LowLayer::Encoder encoder, TIM_TypeDef *const tim, const std::uint32_t timCh, LowLayer::GPIO::Pin dirPin):
+        IMotorDriver(maxSpeed, std::move(encoder)), _tim(tim), _timCh(timCh), _dir(dirPin) {
     }
 
     void CytronMotorDriver::init() {

@@ -16,17 +16,19 @@
 #if ((!defined DISABLE_HAL && !defined DISABLE_CAN && !defined DISABLE_CANMOTOR || !defined DISABLE_LL) && !defined DISABLE_PERIPHERAL && !defined DISABLE_USART && !defined DISABLE_SBDBT && !defined DISABLE_CONTROLLER)
 
 #include "Controller.hh"
-#include "LowLayer/SBDBT.hh"
+#include "MiddleLayer/SBDBT.hh"
+#include "Steering/ISteering.hh"
+#include <utility>
 
 namespace LibMecha {
-    template<class Steering> Controller<Steering>::Controller(LowLayer::SBDBT &sbdbt):
-        _sbdbt(sbdbt), _bs(), _deadZones(), _steering() {
+    Controller::Controller(MiddleLayer::SBDBT sbdbt, const Steering::ISteering &steering):
+        _sbdbt(std::move(sbdbt)), _bs(), _deadZones(), _steering(steering) {
     }
 
-    template<class Steering> Controller<Steering>::~Controller() = default;
+    Controller::~Controller() = default;
 
-    template<class Steering> void Controller<Steering>::stickToSteering() const {
-        const LowLayer::SBDBT::AnalogState as = getStick();
+    void Controller::stickToSteering() {
+        MiddleLayer::SBDBT::AnalogState as = getStick();
         const float r = std::hypot(as.LX, as.LY) / STICK_MAX; // 動径
         const StickTheta theta = sticksToTheta(); // 偏角・スティックの角度(右0、反時計回りが正、-π < x <= π)
         _steering.polarInput(r, theta);

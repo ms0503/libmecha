@@ -37,7 +37,7 @@ namespace LibMecha::LowLayer {
          * 累計カウントの取得
          * @return 累計カウント
          */
-        [[nodiscard]] inline std::int16_t getRot() const {
+        [[nodiscard]] inline std::int32_t getRot() const {
             return _rot;
         }
 
@@ -45,7 +45,7 @@ namespace LibMecha::LowLayer {
          * 差分カウントの取得
          * @return 差分カウント
          */
-        [[nodiscard]] inline std::int16_t getDeltaRot() const {
+        [[nodiscard]] inline std::int32_t getDeltaRot() const {
             return _deltaRot;
         }
 
@@ -85,7 +85,7 @@ namespace LibMecha::LowLayer {
          * 累計回転数の取得
          * @return 累計回転数
          */
-        [[nodiscard]] inline std::int16_t getRevolution() const {
+        [[nodiscard]] inline std::int32_t getRevolution() const {
             return _rot / _cpr;
         }
 
@@ -93,7 +93,7 @@ namespace LibMecha::LowLayer {
          * 差分回転数の取得
          * @return 差分回転数
          */
-        [[nodiscard]] inline std::int16_t getDeltaRevolution() const {
+        [[nodiscard]] inline std::int32_t getDeltaRevolution() const {
             return _deltaRot / _cpr;
         }
 
@@ -106,9 +106,9 @@ namespace LibMecha::LowLayer {
         /// タイマー
         TIM_TypeDef *const _tim;
         /// 累計カウンター
-        std::int16_t _rot = 0;
+        std::int32_t _rot = 0;
         /// 差分カウンター
-        std::int16_t _deltaRot = 0;
+        std::int32_t _deltaRot = 0;
         /// パルス毎回転(分解能)
         std::uint16_t _ppr;
         /// カウント毎回転

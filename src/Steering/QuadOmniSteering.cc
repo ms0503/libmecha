@@ -20,59 +20,59 @@
 #include "Steering/QuadOmniSteering.hh"
 #include <array>
 #include <cmath>
-#include <concepts>
 #include <cstdint>
+#include <utility>
 
 namespace LibMecha::Steering {
-    template<class MotorDriver> requires std::derived_from<MotorDriver, LowLayer::IMotorDriver> QuadOmniSteering<MotorDriver>::QuadOmniSteering(const std::array<MotorDriver, 4> md):
-        _md(md) {
+    QuadOmniSteering::QuadOmniSteering(std::array<MiddleLayer::IMotorDriver, 4> md):
+        _md(std::move(md)) {
     }
 
-    template<class MotorDriver> requires std::derived_from<MotorDriver, LowLayer::IMotorDriver> QuadOmniSteering<MotorDriver>::~QuadOmniSteering() = default;
+    QuadOmniSteering::~QuadOmniSteering() = default;
 
-    template<class MotorDriver> requires std::derived_from<MotorDriver, LowLayer::IMotorDriver> void QuadOmniSteering<MotorDriver>::polarInput(const float r, const LibMecha::Controller<QuadOmniSteering<MotorDriver>>::StickTheta theta) const {
+    void QuadOmniSteering::polarInput(const float r, const LibMecha::Controller::StickTheta theta) {
         _md.at(0).setTarget(std::sin(theta.left - M_PI_4) * r * _md.at(0).getMaxSpeed());
         _md.at(1).setTarget(-std::sin(theta.left + M_PI_4) * r * _md.at(1).getMaxSpeed());
         _md.at(2).setTarget(-std::sin(theta.left - M_PI_4) * r * _md.at(2).getMaxSpeed());
         _md.at(3).setTarget(std::sin(theta.left + M_PI_4) * r * _md.at(3).getMaxSpeed());
     }
 
-    template<class MotorDriver> requires std::derived_from<MotorDriver, LowLayer::IMotorDriver> void QuadOmniSteering<MotorDriver>::forward(const std::int32_t speed) const {
+    void QuadOmniSteering::forward(const std::int32_t speed) {
         _md.at(0).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
         _md.at(1).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
         _md.at(2).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(2).getMaxSpeed()));
         _md.at(3).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
     }
 
-    template<class MotorDriver> requires std::derived_from<MotorDriver, LowLayer::IMotorDriver> void QuadOmniSteering<MotorDriver>::backward(const std::int32_t speed) const {
+    void QuadOmniSteering::backward(const std::int32_t speed) {
         _md.at(0).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
         _md.at(1).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
         _md.at(2).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(2).getMaxSpeed()));
         _md.at(3).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
     }
 
-    template<class MotorDriver> requires std::derived_from<MotorDriver, LowLayer::IMotorDriver> void QuadOmniSteering<MotorDriver>::left(const std::int32_t speed) const {
+    void QuadOmniSteering::left(const std::int32_t speed) {
         _md.at(0).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
         _md.at(1).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
         _md.at(2).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(2).getMaxSpeed()));
         _md.at(3).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
     }
 
-    template<class MotorDriver> requires std::derived_from<MotorDriver, LowLayer::IMotorDriver> void QuadOmniSteering<MotorDriver>::right(const std::int32_t speed) const {
+    void QuadOmniSteering::right(const std::int32_t speed) {
         _md.at(0).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
         _md.at(1).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
         _md.at(2).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(2).getMaxSpeed()));
         _md.at(3).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
     }
 
-    template<class MotorDriver> requires std::derived_from<MotorDriver, LowLayer::IMotorDriver> void QuadOmniSteering<MotorDriver>::turnLeft(const std::int32_t speed) const {
+    void QuadOmniSteering::turnLeft(const std::int32_t speed) {
         _md.at(0).setTarget(std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
         _md.at(1).setTarget(std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
         _md.at(2).setTarget(std::max(std::abs(speed), _md.at(2).getMaxSpeed()));
         _md.at(3).setTarget(std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
     }
 
-    template<class MotorDriver> requires std::derived_from<MotorDriver, LowLayer::IMotorDriver> void QuadOmniSteering<MotorDriver>::turnRight(const std::int32_t speed) const {
+    void QuadOmniSteering::turnRight(const std::int32_t speed) {
         _md.at(0).setTarget(-std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
         _md.at(1).setTarget(-std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
         _md.at(2).setTarget(-std::max(std::abs(speed), _md.at(2).getMaxSpeed()));

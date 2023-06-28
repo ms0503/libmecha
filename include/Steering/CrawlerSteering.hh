@@ -1,7 +1,7 @@
 /*
- * QuadOmniSteering.hh
+ * CrawlerSteering.hh
  *
- *  Created on: 2023/06/23
+ *  Created on: 2023/5/27
  *      Author: ms0503
  *
  *  This file is part of libmecha.
@@ -23,23 +23,25 @@
 
 namespace LibMecha::Steering {
     /**
-     * 4輪オムニホイール駆動足回り
+     * クローラー足回り
      * @tparam MotorDriver モータードライバー
      */
-    class QuadOmniSteering : public ISteering {
+    class CrawlerSteering : public ISteering {
     public:
         using ISteering::ISteering;
+
+        explicit CrawlerSteering() = delete;
 
         /**
          * コンストラクター
          * @param md モータードライバー
          */
-        explicit QuadOmniSteering(std::array<MiddleLayer::IMotorDriver, 4> md);
+        explicit CrawlerSteering(std::array<MiddleLayer::IMotorDriver, 2> md);
 
         /**
          * デストラクター
          */
-        ~QuadOmniSteering();
+        ~CrawlerSteering();
 
         void polarInput(float r, LibMecha::Controller::StickTheta theta);
 
@@ -47,16 +49,11 @@ namespace LibMecha::Steering {
 
         void backward(std::int32_t speed) override;
 
-        void left(std::int32_t speed) override;
-
-        void right(std::int32_t speed) override;
-
         void turnLeft(std::int32_t speed) override;
 
         void turnRight(std::int32_t speed) override;
 
     private:
-        /// モータードライバー配列
-        std::array<MiddleLayer::IMotorDriver, 4> _md;
+        std::array<MiddleLayer::IMotorDriver, 2> _md;
     };
 }

@@ -18,10 +18,18 @@
 #include "LowLayer/Encoder.hh"
 #include "MiddleLayer/IMotorDriver.hh"
 #include <cstdint>
+#include <utility>
 
 namespace LibMecha::MiddleLayer {
-    IMotorDriver::IMotorDriver(const std::int32_t maxSpeed, LowLayer::Encoder &encoder):
-        _maxSpeed(maxSpeed), _encoder(encoder) {
+    IMotorDriver::IMotorDriver(const std::int32_t maxSpeed, LowLayer::Encoder encoder):
+        _maxSpeed(maxSpeed), _encoder(std::move(encoder)) {
+    }
+
+    void IMotorDriver::init() {
+    }
+
+    bool IMotorDriver::setTarget(std::int32_t targetSpeed) {
+        return false;
     }
 }
 

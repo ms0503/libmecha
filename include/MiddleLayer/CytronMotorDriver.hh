@@ -37,7 +37,7 @@ namespace LibMecha::MiddleLayer {
          * @param tm 1次遅れ特性時定数
          * @param tm2 目標時定数
          */
-        explicit CytronMotorDriver(std::int32_t maxSpeed, LowLayer::Encoder &encoder, TIM_TypeDef *tim, std::uint32_t timCh, LowLayer::GPIO::Pin &dirPin);
+        explicit CytronMotorDriver(std::int32_t maxSpeed, LowLayer::Encoder encoder, TIM_TypeDef *tim, std::uint32_t timCh, LowLayer::GPIO::Pin dirPin);
 
         void init() override;
 

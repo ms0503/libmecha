@@ -1,21 +1,33 @@
-#!/bin/bash
-_error () {
-    printf "[1;31mError: %s[m\n" "$1"
-}
-if [[ -z "$1" ]]; then
-    _error "クラス名がありません。"
-    exit 1
-fi
-if [[ -f "include/$1.hh" || -f "src/$1.cc" ]]; then
-    _error "ファイルが既に存在しています。"
-    exit 2
-fi
-BASENAME="${1##*/}"
-cat <<EOF > "include/$1.hh"
-/*
- * ${BASENAME}.hh
+#!/usr/bin/node
+'use strict';
+
+const { access, writeFile } = require('fs/promises');
+const { basename, dirname } = require('path');
+
+const ERR_TOO_FEW_ARGS = 1;
+const ERR_FILE_EXISTS = 2;
+
+async function main(argc, argv) {
+    if(argc < 2) {
+        error("クラス名がありません。");
+        return ERR_TOO_FEW_ARGS;
+    }
+    const [_, filename, ...args] = argv;
+    const ns = dirname(filename).split('/').filter(e => e !== '.').reduce((p, c) => `${p}::${c}`, 'LibMecha');
+    const bn = basename(filename);
+    try {
+        await access(`include/${filename}.hh`);
+        await access(`src/${filename}.cc`);
+        error('ファイルが既に存在しています。');
+        return ERR_FILE_EXISTS;
+    } catch(e) {
+    }
+    const date = new Date();
+    const d = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()}`;
+    await Promise.all([writeFile(`include/${filename}.hh`, `/*
+ * ${bn}.hh
  *
- *  Created on: $(date +%Y/%m/%d)
+ *  Created on: ${d}
  *      Author: ms0503
  *
  *  This file is part of libmecha.
@@ -29,18 +41,16 @@ cat <<EOF > "include/$1.hh"
 
 #pragma once
 
-namespace LibMecha {
-    class ${BASENAME} {
-        explicit ${BASENAME}();
-        ~${BASENAME}();
+namespace ${ns} {
+    class ${bn} {
+        explicit ${bn}();
+        ~${bn}();
     };
 }
-EOF
-cat <<EOF > "src/$1.cc"
-/*
- * ${BASENAME}.cc
+`), writeFile(`src/${filename}.cc`, `/*
+ * ${bn}.cc
  *
- *  Created on: $(date +%y/%m/%d)
+ *  Created on: ${d}
  *      Author: ms0503
  *
  *  This file is part of libmecha.
@@ -52,13 +62,24 @@ cat <<EOF > "src/$1.cc"
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "$1.hh"
+#include "${filename}.hh"
 
-namespace LibMecha {
-    ${BASENAME}::${BASENAME}() {
+namespace ${ns} {
+    ${bn}::${bn}() {
     }
-    ${BASENAME}::~${BASENAME}() {
+    ${bn}::~${bn}() {
     }
 }
-EOF
-exit 0
+`)]);
+    return 0;
+}
+
+function error(msg) {
+    console.error(`[1;31mError: ${msg}[m`);
+}
+
+(async (argc, argv) => {
+    argv.shift();
+    const exitCode = await main(argc, argv);
+    process.exit(exitCode);
+})(process.argv.length - 1, process.argv);

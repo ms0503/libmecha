@@ -51,7 +51,8 @@ namespace LibMecha::LowLayer {
          * @param sendData 送信データ
          * @return 送信完了
          */
-        template<std::size_t SIZE> bool send(std::uint8_t address, const std::uint8_t (&sendData)[SIZE]) const;
+        template<std::size_t SIZE>
+        bool send(std::uint8_t address, const std::uint8_t (&sendData)[SIZE]) const;
 
         /**
          * 初期化

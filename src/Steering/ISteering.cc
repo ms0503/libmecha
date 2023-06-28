@@ -20,6 +20,31 @@
 
 namespace LibMecha::Steering {
     std::int32_t maxSpeed;
+
+    ISteering::ISteering() = default;
+
+    ISteering::~ISteering() = default;
+
+    void ISteering::polarInput(const float r, const LibMecha::Controller::StickTheta theta) {
+    }
+
+    void ISteering::forward(const std::int32_t speed) {
+    }
+
+    void ISteering::backward(const std::int32_t speed) {
+    }
+
+    void ISteering::left(const std::int32_t speed) {
+    }
+
+    void ISteering::right(const std::int32_t speed) {
+    }
+
+    void ISteering::turnLeft(const std::int32_t speed) {
+    }
+
+    void ISteering::turnRight(const std::int32_t speed) {
+    }
 }
 
 #endif
