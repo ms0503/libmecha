@@ -13,9 +13,9 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_LL && !defined DISABLE_MOTORDRIVER && !defined DISABLE_STEERING)
+#if (!defined DISABLE_MOTORDRIVER && !defined DISABLE_STEERING)
 
-#include "Steering/ISteering.hh"
+#include <Steering/ISteering.hh>
 #include <cstdint>
 
 namespace LibMecha::Steering {
@@ -25,7 +25,7 @@ namespace LibMecha::Steering {
 
     ISteering::~ISteering() = default;
 
-    void ISteering::polarInput(const float r, const LibMecha::Controller::StickTheta theta) {
+    void ISteering::polarInput(const float r, const LibMecha::StickTheta theta) {
     }
 
     void ISteering::forward(const std::int32_t speed) {

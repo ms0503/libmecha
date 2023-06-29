@@ -15,10 +15,10 @@
 
 #pragma once
 
-#include "Peripheral.hh"
-#include "stm32f4xx_hal.h"
+#include <LowLayer/Peripheral.hh>
 #include <array>
 #include <cstdint>
+#include <stm32_drivers.h>
 
 namespace LibMecha::LowLayer {
     /// CANノード

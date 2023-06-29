@@ -15,9 +15,9 @@
 
 #pragma once
 
-#include "Controller.hh"
-#include "ISteering.hh"
-#include "MiddleLayer/IMotorDriver.hh"
+#include <MiddleLayer/IMotorDriver.hh>
+#include <Steering/ISteering.hh>
+#include <Stick.hh>
 #include <array>
 #include <cstdint>
 
@@ -43,7 +43,7 @@ namespace LibMecha::Steering {
          */
         ~CrawlerSteering();
 
-        void polarInput(float r, LibMecha::Controller::StickTheta theta);
+        void polarInput(float r, LibMecha::StickTheta theta);
 
         void forward(std::int32_t speed) override;
 

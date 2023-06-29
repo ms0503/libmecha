@@ -13,14 +13,10 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_LL && !defined DISABLE_MOTORDRIVER && !defined DISABLE_STEERING && !defined DISABLE_QUADOMNISTEERING)
+#if (!defined DISABLE_MOTORDRIVER && !defined DISABLE_STEERING && !defined DISABLE_QUADOMNISTEERING)
 
-#include "Controller.hh"
-#include "MiddleLayer/IMotorDriver.hh"
-#include "Steering/QuadOmniSteering.hh"
-#include <array>
+#include <Steering/QuadOmniSteering.hh>
 #include <cmath>
-#include <cstdint>
 #include <utility>
 
 namespace LibMecha::Steering {
@@ -30,7 +26,7 @@ namespace LibMecha::Steering {
 
     QuadOmniSteering::~QuadOmniSteering() = default;
 
-    void QuadOmniSteering::polarInput(const float r, const LibMecha::Controller::StickTheta theta) {
+    void QuadOmniSteering::polarInput(const float r, const LibMecha::StickTheta theta) {
         _md.at(0).setTarget(std::sin(theta.left - M_PI_4) * r * _md.at(0).getMaxSpeed());
         _md.at(1).setTarget(-std::sin(theta.left + M_PI_4) * r * _md.at(1).getMaxSpeed());
         _md.at(2).setTarget(-std::sin(theta.left - M_PI_4) * r * _md.at(2).getMaxSpeed());

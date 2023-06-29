@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "LowLayer/GPIO.hh"
+#include <LowLayer/GPIO.hh>
 #include <cstddef>
 
 namespace LibMecha {

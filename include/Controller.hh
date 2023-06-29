@@ -15,9 +15,10 @@
 
 #pragma once
 
-#include "MiddleLayer/IMotorDriver.hh"
-#include "MiddleLayer/SBDBT.hh"
-#include "Steering/ISteering.hh"
+#include <MiddleLayer/IMotorDriver.hh>
+#include <MiddleLayer/SBDBT.hh>
+#include <Steering/ISteering.hh>
+#include <Stick.hh>
 #include <array>
 #include <cmath>
 #include <cstdint>
@@ -29,19 +30,9 @@ namespace LibMecha {
     /// スティック入力の最大値
     constexpr const std::int8_t STICK_MAX = 63;
 
-    /**
-     * コントローラー
-     */
+    /// コントローラー
     class Controller {
     public:
-        /// スティックの角度(右0・反時計回り・rad・-π < x <= π)
-        struct StickTheta {
-            /// 左スティック
-            float left;
-            /// 右スティック
-            float right;
-        };
-
         /**
          * コンストラクター
          */

@@ -13,10 +13,9 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_LL && !defined DISABLE_PERIPHERAL && !defined DISABLE_GPIO)
+#if (defined USE_FULL_LL_DRIVER && !defined DISABLE_GPIO)
 
-#include "LowLayer/GPIO.hh"
-#include <vector>
+#include <LowLayer/GPIO.hh>
 
 namespace LibMecha::LowLayer {
     GPIO::GPIO(const std::vector<Pin> &pin):

@@ -15,8 +15,8 @@
 
 #pragma once
 
-#include "LowLayer/Encoder.hh"
-#include "LowLayer/Peripheral.hh"
+#include <LowLayer/Encoder.hh>
+#include <LowLayer/Peripheral.hh>
 #include <cstdint>
 
 namespace LibMecha::MiddleLayer {

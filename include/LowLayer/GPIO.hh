@@ -15,10 +15,10 @@
 
 #pragma once
 
-#include "Peripheral.hh"
-#include "stm32f4xx_ll_gpio.h"
+#include <LowLayer/Peripheral.hh>
 #include <cstddef>
 #include <cstdint>
+#include <stm32_drivers.h>
 #include <vector>
 
 namespace LibMecha::LowLayer {

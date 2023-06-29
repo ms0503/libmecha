@@ -13,11 +13,9 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_LL && !defined DISABLE_TIM && !defined DISABLE_PERIPHERAL && !defined DISABLE_ENCODER && !defined DISABLE_MOTORDRIVER)
+#if (defined USE_FULL_LL_DRIVER && !defined DISABLE_TIM && !defined DISABLE_ENCODER && !defined DISABLE_MOTORDRIVER)
 
-#include "LowLayer/Encoder.hh"
-#include "MiddleLayer/IMotorDriver.hh"
-#include <cstdint>
+#include <MiddleLayer/IMotorDriver.hh>
 #include <utility>
 
 namespace LibMecha::MiddleLayer {

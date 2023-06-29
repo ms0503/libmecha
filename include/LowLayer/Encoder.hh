@@ -15,10 +15,10 @@
 
 #pragma once
 
-#include "Peripheral.hh"
-#include "stm32f4xx_ll_tim.h"
+#include <LowLayer/Peripheral.hh>
 #include <cmath>
 #include <cstdint>
+#include <stm32_drivers.h>
 
 namespace LibMecha::LowLayer {
     /// エンコーダー

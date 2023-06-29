@@ -15,9 +15,8 @@
 
 #pragma once
 
-#include "Controller.hh"
-#include "MiddleLayer/IMotorDriver.hh"
-#include <cstdint>
+#include <MiddleLayer/IMotorDriver.hh>
+#include <Stick.hh>
 #include <vector>
 
 namespace LibMecha::Steering {
@@ -60,7 +59,7 @@ namespace LibMecha::Steering {
          * @param r 動径
          * @param theta 偏角
          */
-        virtual void polarInput(float r, LibMecha::Controller::StickTheta theta);
+        virtual void polarInput(float r, LibMecha::StickTheta theta);
 
         /**
          * 前進

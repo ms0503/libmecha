@@ -1,33 +1,30 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.8)
 enable_language(CXX)
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(mecha)
 
-set(PROJECT_ROOT "${CMAKE_SOURCE_DIR}" CACHE STRING "")
-if(LIBMECHA_ONLY)
-    set(PROJECT_ROOT "${CMAKE_SOURCE_DIR}/.." CACHE STRING "")
-endif()
+set(PROJECT_ROOT "${MECHA_SOURCE_DIR}/.." CACHE STRING "")
 
-include_directories(include ${PROJECT_ROOT}/Core/Inc ${PROJECT_ROOT}/Drivers/CMSIS/Device/ST/STM32F4xx/Include ${PROJECT_ROOT}/Drivers/CMSIS/Include ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Inc)
+add_library(mecha STATIC)
 
-file(GLOB SRCS src/*.cc src/**/*.cc)
+add_subdirectory(src)
 
-add_library(mecha STATIC ${SRCS})
+target_compile_features(mecha PUBLIC cxx_std_23)
+target_include_directories(mecha PUBLIC include ${PROJECT_ROOT}/Core/Inc ${PROJECT_ROOT}/Drivers/CMSIS/Device/ST/STM32F4xx/Include ${PROJECT_ROOT}/Drivers/CMSIS/Include ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Inc)
+
+# 使用MCU選択
+
+#add_definitions(-DSTM32F3)
+#add_definitions(-DSTM32F4)
 
 # 機能無効化フラグ(外部ヘッダを参照している関係上必須)
 
-## ペリフェラルドライバー
-add_definitions(-DDISABLE_HAL)
-#add_definitions(-DDISABLE_LL)
-
-## 低レイヤー
+## 低レイヤー/ペリフェラル
 #add_definitions(-DDISABLE_CAN)
 #add_definitions(-DDISABLE_ENCODER)
 #add_definitions(-DDISABLE_GPIO)
 #add_definitions(-DDISABLE_TIM)
-add_definitions(-DDISABLE_USART)
+#add_definitions(-DDISABLE_USART)
 
 ## 中間レイヤー
 #add_definitions(-DDISABLE_CANMOTORDRIVER)

@@ -15,11 +15,11 @@
 
 #pragma once
 
-#include "LowLayer/Peripheral.hh"
-#include "SBDBT.h"
-#include "stm32f4xx_ll_usart.h"
+#include <LowLayer/Peripheral.hh>
+#include <MiddleLayer/SBDBT.h>
 #include <array>
 #include <cstdint>
+#include <stm32_drivers.h>
 
 namespace LibMecha::MiddleLayer {
     /// SBDBTのデータサイズ

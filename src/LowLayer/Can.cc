@@ -13,12 +13,9 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_HAL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN)
+#if (defined USE_HAL_DRIVER && !defined DISABLE_CAN)
 
-#include "LowLayer/Can.hh"
-#include "stm32f4xx_hal.h"
-#include <array>
-#include <cstdint>
+#include <LowLayer/Can.hh>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"

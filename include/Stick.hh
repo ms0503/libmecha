@@ -1,7 +1,7 @@
 /*
- * Utils.cc
+ * Stick.hh
  *
- *  Created on: 2023/03/22
+ *  Created on: 2023/06/29
  *      Author: ms0503
  *
  *  This file is part of libmecha.
@@ -13,7 +13,14 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <Utils.hh>
+#pragma once
 
-namespace LibMecha::Utils {
-} // namespace LibMecha::Utils
+namespace LibMecha {
+    /// スティックの角度(右0・反時計回り・rad・-π < x <= π)
+    struct StickTheta {
+        /// 左スティック
+        float left;
+        /// 右スティック
+        float right;
+    };
+}

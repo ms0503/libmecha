@@ -13,11 +13,9 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_LL && !defined DISABLE_PERIPHERAL && !defined DISABLE_USART && !defined DISABLE_SBDBT)
+#if (defined USE_FULL_LL_DRIVER && !defined DISABLE_USART && !defined DISABLE_SBDBT)
 
-#include "MiddleLayer/SBDBT.hh"
-#include <array>
-#include <cstdint>
+#include <MiddleLayer/SBDBT.hh>
 #include <numeric>
 
 namespace LibMecha::MiddleLayer {

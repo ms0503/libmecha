@@ -13,11 +13,9 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_LL && !defined DISABLE_TIM && !defined DISABLE_PERIPHERAL && !defined DISABLE_ENCODER)
+#if (defined USE_FULL_LL_DRIVER && !defined DISABLE_TIM && !defined DISABLE_ENCODER)
 
-#include "LowLayer/Encoder.hh"
-#include "stm32f4xx_ll_tim.h"
-#include <cstdint>
+#include <LowLayer/Encoder.hh>
 
 namespace LibMecha::LowLayer {
     Encoder::Encoder(TIM_TypeDef *tim, std::uint16_t ppr):

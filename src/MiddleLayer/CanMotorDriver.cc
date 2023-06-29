@@ -13,12 +13,10 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_HAL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN && !defined DISABLE_MOTORDRIVER && !defined DISABLE_CANMOTORDRIVER)
+#if (defined USE_HAL_DRIVER && !defined DISABLE_CAN && !defined DISABLE_MOTORDRIVER && !defined DISABLE_CANMOTORDRIVER)
 
-#include "LowLayer/Can.hh"
-#include "MiddleLayer/CanMotorDriver.hh"
+#include <MiddleLayer/CanMotorDriver.hh>
 #include <algorithm>
-#include <cstdint>
 
 namespace LibMecha::MiddleLayer {
     CanMotorDriver::CanMotorDriver(LowLayer::Can &can, std::uint8_t address):
