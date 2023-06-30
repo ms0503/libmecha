@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 3.8)
 enable_language(CXX)
 
-project(mecha)
+project(mecha VERSION 6.0.0 LANGUAGES CXX)
 
-set(PROJECT_ROOT "${MECHA_SOURCE_DIR}/.." CACHE STRING "")
+set(PROJECT_ROOT "${MECHA_SOURCE_DIR}/.." CACHE PATH "STM32プロジェクトルート")
 
 add_library(mecha STATIC)
 
 add_subdirectory(src)
 
-target_compile_features(mecha PUBLIC cxx_std_23)
-target_include_directories(mecha PUBLIC include ${PROJECT_ROOT}/Core/Inc ${PROJECT_ROOT}/Drivers/CMSIS/Device/ST/STM32F4xx/Include ${PROJECT_ROOT}/Drivers/CMSIS/Include ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Inc)
+target_compile_features(mecha PRIVATE cxx_std_23)
+target_include_directories(mecha PUBLIC include PRIVATE ${PROJECT_ROOT}/Core/Inc ${PROJECT_ROOT}/Drivers/CMSIS/Device/ST/STM32F4xx/Include ${PROJECT_ROOT}/Drivers/CMSIS/Include ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Inc)
 
 # 使用MCU選択
 
