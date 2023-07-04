@@ -41,9 +41,9 @@ namespace LibMecha::Steering {
         /**
          * デストラクター
          */
-        ~CrawlerSteering();
+        ~CrawlerSteering() override;
 
-        void polarInput(float r, LibMecha::StickTheta theta);
+        void polarInput(float r, LibMecha::StickTheta theta) override;
 
         void forward(std::int32_t speed) override;
 

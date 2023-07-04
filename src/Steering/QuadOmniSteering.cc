@@ -17,6 +17,7 @@
 
 #include <Steering/QuadOmniSteering.hh>
 #include <cmath>
+#include <numbers>
 #include <utility>
 
 namespace LibMecha::Steering {
@@ -27,38 +28,38 @@ namespace LibMecha::Steering {
     QuadOmniSteering::~QuadOmniSteering() = default;
 
     void QuadOmniSteering::polarInput(const float r, const LibMecha::StickTheta theta) {
-        _md.at(0).setTarget(std::sin(theta.left - M_PI_4) * r * _md.at(0).getMaxSpeed());
-        _md.at(1).setTarget(-std::sin(theta.left + M_PI_4) * r * _md.at(1).getMaxSpeed());
-        _md.at(2).setTarget(-std::sin(theta.left - M_PI_4) * r * _md.at(2).getMaxSpeed());
-        _md.at(3).setTarget(std::sin(theta.left + M_PI_4) * r * _md.at(3).getMaxSpeed());
+        _md.at(0).setTarget(std::sin(theta.left - std::numbers::pi_v<float> / 4.0f) * r * _md.at(0).getMaxSpeed());
+        _md.at(1).setTarget(-std::sin(theta.left + std::numbers::pi_v<float> / 4.0f) * r * _md.at(1).getMaxSpeed());
+        _md.at(2).setTarget(-std::sin(theta.left - std::numbers::pi_v<float> / 4.0f) * r * _md.at(2).getMaxSpeed());
+        _md.at(3).setTarget(std::sin(theta.left + std::numbers::pi_v<float> / 4.0f) * r * _md.at(3).getMaxSpeed());
     }
 
     void QuadOmniSteering::forward(const std::int32_t speed) {
-        _md.at(0).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
-        _md.at(1).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
-        _md.at(2).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(2).getMaxSpeed()));
-        _md.at(3).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
+        _md.at(0).setTarget(std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
+        _md.at(1).setTarget(-std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
+        _md.at(2).setTarget(-std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(2).getMaxSpeed()));
+        _md.at(3).setTarget(std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
     }
 
     void QuadOmniSteering::backward(const std::int32_t speed) {
-        _md.at(0).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
-        _md.at(1).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
-        _md.at(2).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(2).getMaxSpeed()));
-        _md.at(3).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
+        _md.at(0).setTarget(-std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
+        _md.at(1).setTarget(std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
+        _md.at(2).setTarget(std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(2).getMaxSpeed()));
+        _md.at(3).setTarget(-std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
     }
 
     void QuadOmniSteering::left(const std::int32_t speed) {
-        _md.at(0).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
-        _md.at(1).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
-        _md.at(2).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(2).getMaxSpeed()));
-        _md.at(3).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
+        _md.at(0).setTarget(std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
+        _md.at(1).setTarget(std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
+        _md.at(2).setTarget(-std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(2).getMaxSpeed()));
+        _md.at(3).setTarget(-std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
     }
 
     void QuadOmniSteering::right(const std::int32_t speed) {
-        _md.at(0).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
-        _md.at(1).setTarget(-std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
-        _md.at(2).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(2).getMaxSpeed()));
-        _md.at(3).setTarget(std::sin(M_PI_4) * std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
+        _md.at(0).setTarget(-std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(0).getMaxSpeed()));
+        _md.at(1).setTarget(-std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
+        _md.at(2).setTarget(std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(2).getMaxSpeed()));
+        _md.at(3).setTarget(std::sin(std::numbers::pi_v<float> / 4.0f) * std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
     }
 
     void QuadOmniSteering::turnLeft(const std::int32_t speed) {

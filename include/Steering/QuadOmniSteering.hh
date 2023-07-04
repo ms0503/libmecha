@@ -30,6 +30,8 @@ namespace LibMecha::Steering {
     public:
         using ISteering::ISteering;
 
+        explicit QuadOmniSteering() = delete;
+
         /**
          * コンストラクター
          * @param md モータードライバー
@@ -39,9 +41,9 @@ namespace LibMecha::Steering {
         /**
          * デストラクター
          */
-        ~QuadOmniSteering();
+        ~QuadOmniSteering() override;
 
-        void polarInput(float r, LibMecha::StickTheta theta);
+        void polarInput(float r, LibMecha::StickTheta theta) override;
 
         void forward(std::int32_t speed) override;
 
