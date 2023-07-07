@@ -13,8 +13,6 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_MOTORDRIVER && !defined DISABLE_STEERING)
-
 #include <Steering/ISteering.hh>
 #include <cstdint>
 
@@ -46,5 +44,3 @@ namespace LibMecha::Steering {
     void ISteering::turnRight(const std::int32_t speed) {
     }
 }
-
-#endif

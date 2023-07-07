@@ -13,8 +13,6 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_MOTORDRIVER && !defined DISABLE_STEERING && !defined DISABLE_QUADOMNISTEERING)
-
 #include <Steering/QuadOmniSteering.hh>
 #include <cmath>
 #include <numbers>
@@ -76,5 +74,3 @@ namespace LibMecha::Steering {
         _md.at(3).setTarget(-std::max(std::abs(speed), _md.at(3).getMaxSpeed()));
     }
 }
-
-#endif

@@ -13,7 +13,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (defined USE_FULL_LL_DRIVER && !defined DISABLE_GPIO)
+#ifdef USE_FULL_LL_DRIVER
 
 #include <LowLayer/GPIO.hh>
 

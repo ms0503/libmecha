@@ -13,7 +13,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (defined USE_FULL_LL_DRIVER && !defined DISABLE_TIM && !defined DISABLE_GPIO && !defined DISABLE_ENCODER && !defined DISABLE_MOTORDRIVER && !defined DISABLE_CYTRONMOTORDRIVER)
+#ifdef USE_FULL_LL_DRIVER
 
 #include <MiddleLayer/CytronMotorDriver.hh>
 #include <cmath>

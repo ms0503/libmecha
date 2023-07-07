@@ -1,3 +1,12 @@
 cmake_policy(SET CMP0076 NEW)
 
-target_sources(mecha PRIVATE Can.cc Encoder.cc GPIO.cc Peripheral.cc)
+if(ENABLE_CAN)
+    target_sources(mecha PRIVATE Can.cc)
+endif()
+if(ENABLE_ENCODER AND ENABLE_TIM)
+    target_sources(mecha PRIVATE Encoder.cc)
+endif()
+if(ENABLE_GPIO)
+    target_sources(mecha PRIVATE GPIO.cc)
+endif()
+target_sources(mecha PRIVATE Peripheral.cc)

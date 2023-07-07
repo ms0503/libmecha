@@ -7,8 +7,6 @@ set(PROJECT_ROOT "${MECHA_SOURCE_DIR}/.." CACHE PATH "STM32プロジェクトル
 
 add_library(mecha STATIC)
 
-add_subdirectory(src)
-
 target_compile_features(mecha PRIVATE cxx_std_23)
 target_include_directories(mecha PUBLIC include PRIVATE ${PROJECT_ROOT}/Core/Inc ${PROJECT_ROOT}/Drivers/CMSIS/Device/ST/STM32F4xx/Include ${PROJECT_ROOT}/Drivers/CMSIS/Include ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Inc)
 
@@ -17,22 +15,25 @@ target_include_directories(mecha PUBLIC include PRIVATE ${PROJECT_ROOT}/Core/Inc
 #add_definitions(-DSTM32F3)
 #add_definitions(-DSTM32F4)
 
-# 機能無効化フラグ(外部ヘッダを参照している関係上必須)
+# 機能有効化フラグ(外部ヘッダを参照している関係上必須)
 
 ## 低レイヤー/ペリフェラル
-#add_definitions(-DDISABLE_CAN)
-#add_definitions(-DDISABLE_ENCODER)
-#add_definitions(-DDISABLE_GPIO)
-#add_definitions(-DDISABLE_TIM)
-#add_definitions(-DDISABLE_USART)
+set(ENABLE_CAN ON)
+set(ENABLE_ENCODER ON)
+set(ENABLE_GPIO ON)
+set(ENABLE_TIM ON)
+set(ENABLE_USART ON)
 
 ## 中間レイヤー
-#add_definitions(-DDISABLE_CANMOTORDRIVER)
-#add_definitions(-DDISABLE_CYTRONMOTORDRIVER)
-#add_definitions(-DDISABLE_MOTORDRIVER)
-#add_definitions(-DDISABLE_SBDBT)
+set(ENABLE_CANMOTORDRIVER ON)
+set(ENABLE_CYTRONMOTORDRIVER ON)
+set(ENABLE_MOTORDRIVER ON)
+set(ENABLE_SBDBT ON)
 
 ## 上位レイヤー
-#add_definitions(-DDISABLE_CONTROLLER)
-#add_definitions(-DDISABLE_STEERING)
-#add_definitions(-DDISABLE_QUADOMNISTEERING)
+set(ENABLE_CONTROLLER ON)
+set(ENABLE_CRAWLERSTEERING ON)
+set(ENABLE_STEERING ON)
+set(ENABLE_QUADOMNISTEERING ON)
+
+add_subdirectory(src)

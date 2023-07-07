@@ -13,7 +13,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (defined USE_HAL_DRIVER && !defined DISABLE_CAN)
+#ifdef USE_HAL_DRIVER
 
 #include <LowLayer/Can.hh>
 

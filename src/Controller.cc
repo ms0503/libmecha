@@ -13,8 +13,6 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_USART && !defined DISABLE_SBDBT && !defined DISABLE_STEERING && !defined DISABLE_CONTROLLER)
-
 #include <Controller.hh>
 #include <utility>
 
@@ -32,5 +30,3 @@ namespace LibMecha {
         _steering.polarInput(r, theta);
     }
 } // namespace LibMecha
-
-#endif // (!defined DISABLE_HAL && !defined DISABLE_LL && !defined DISABLE_PERIPHERAL && !defined DISABLE_CAN && !defined DISABLE_CANMOTOR && !defined DISABLE_USART && !defined DISABLE_SBDBT && !defined DISABLE_CONTROLLER)

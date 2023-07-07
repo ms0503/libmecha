@@ -13,8 +13,6 @@
  *  You should have received a copy of the GNU Lesser General Public License along with libmecha. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if (!defined DISABLE_MOTORDRIVER && !defined DISABLE_STEERING && !defined DISABLE_CRAWLERSTEERING)
-
 #include <Steering/CrawlerSteering.hh>
 #include <cmath>
 #include <numbers>
@@ -52,5 +50,3 @@ namespace LibMecha::Steering {
         _md.at(1).setTarget(std::numbers::pi_v<float> / 4.0f * std::max(std::abs(speed), _md.at(1).getMaxSpeed()));
     }
 }
-
-#endif

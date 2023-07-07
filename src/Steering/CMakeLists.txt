@@ -1,3 +1,11 @@
 cmake_policy(SET CMP0076 NEW)
 
-target_sources(mecha PRIVATE CrawlerSteering.cc ISteering.cc QuadOmniSteering.cc)
+if(ENABLE_MOTORDRIVER AND ENABLE_STEERING)
+    if(ENABLE_CRAWLERSTEERING)
+        target_sources(mecha PRIVATE CrawlerSteering.cc)
+    endif()
+    if(ENABLE_QUADOMNISTEERING)
+        target_sources(mecha PRIVATE QuadOmniSteering.cc)
+    endif()
+    target_sources(mecha PRIVATE ISteering.cc)
+endif()
